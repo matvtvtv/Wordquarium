@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.WordlyFragment"
-    android:background="#F6F4E9">
+    tools:context=".ui.WordlyFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -19,10 +18,15 @@
             android:gravity="top">
 
             <!-- Существующие карточки (Ваши) -->
+
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginBottom="12dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="45dp"
                 app:cardCornerRadius="20dp"
                 android:clickable="true"
                 app:cardBackgroundColor="@color/light_blue"
@@ -36,7 +40,7 @@
                     android:text="Слово дня"
                     android:textColor="@color/black"
                     android:alpha="0.6"
-                    android:textSize="30sp"
+                    android:textSize="25dp"
                     android:textStyle="bold" />
             </androidx.cardview.widget.CardView>
 
@@ -45,6 +49,8 @@
                 android:layout_height="100dp"
                 android:clickable="true"
                 app:cardCornerRadius="20dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 app:cardBackgroundColor="@color/light_green"
                 app:cardUseCompatPadding="true">
 
@@ -55,7 +61,7 @@
                     android:padding="0dp"
                     android:text="Путешествие"
                     android:textColor="@color/black"
-                    android:textSize="30dp"
+                    android:textSize="25dp"
                     android:alpha="0.6"
                     android:textStyle="bold" />
 
@@ -75,7 +81,50 @@
                 android:progressDrawable="@drawable/progress_bar"/>
 
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:clickable="true"
+                app:cardBackgroundColor="#F8C84E"
+                app:cardCornerRadius="20dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                app:cardUseCompatPadding="true">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:alpha="0.6"
+                    android:gravity="center"
+                    android:padding="0dp"
+                    android:text="Слово другу"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold" />
+
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:clickable="true"
+                app:cardBackgroundColor="#CB98EF"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                app:cardCornerRadius="20dp"
+                app:cardUseCompatPadding="true">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:alpha="0.6"
+                    android:gravity="center"
+                    android:padding="0dp"
+                    android:text="Отгадать на скорость"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold" />
+
+            </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
                 android:id="@+id/mainCard"
                 android:layout_width="match_parent"
@@ -83,6 +132,8 @@
                 app:cardCornerRadius="20dp"
                 app:cardUseCompatPadding="true"
                 android:layout_marginBottom="24dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 android:padding="0dp">
 
                 <FrameLayout
@@ -95,7 +146,6 @@
                         android:background="#F5BFA3"
                         android:layout_gravity="center" />
 
-                    <!-- Имитация водяного знака: полупрозрачный View (можно заменить на ImageView при добавлении drawable) -->
                     <View
                         android:layout_width="332dp"
                         android:layout_height="321dp"
@@ -115,120 +165,117 @@
                             android:id="@+id/titleText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:paddingBottom="12dp"
                             android:text="Тренировка"
                             android:textAlignment="center"
-                            android:textSize="36sp"
-                            android:fontFamily="sans-serif-medium"
                             android:textColor="#5B3D33"
-                            android:paddingBottom="12dp" />
+                            android:textSize="25dp" />
 
-                        <LinearLayout
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardBtn4"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            >
+                            android:layout_height="55dp"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="20dp"
+                            android:layout_gravity="center"
+                            app:cardElevation="2dp"
+                            android:layout_marginLeft="70dp"
+                            app:cardBackgroundColor="@color/light_green"
+                            android:layout_marginRight="70dp">
 
-                            <!-- Левый столбец с кнопками -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:layout_marginStart="6dp"
-                                android:layout_marginTop="6dp"
-                                android:layout_marginBottom="6dp">
+                        <TextView
+                                android:id="@+id/btn4Text"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
 
-                                <!-- Кнопка 4 -->
-                                <androidx.cardview.widget.CardView
-                                    android:id="@+id/cardBtn4"
-                                    android:layout_width="130dp"
-                                    android:layout_height="60dp"
-                                    android:layout_marginBottom="20dp"
-                                    app:cardCornerRadius="20dp">
+                                android:fontFamily="sans-serif"
+                                android:gravity="center"
+                                android:text="4"
+                                android:textColor="#0B0B0B"
+                                android:textSize="25dp"
+                                android:alpha="0.6"
+                                android:textStyle="bold" />
+                        </androidx.cardview.widget.CardView>
 
-                                    <TextView
-                                        android:id="@+id/btn4Text"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:text="4"
-                                        android:textSize="30dp"
-                                        android:gravity="center"
-                                        android:fontFamily="sans-serif"
-                                        android:textColor="#0B0B0B"
-                                        android:background="#BFEFB0" />
-                                </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardBtn5"
+                            android:layout_width="match_parent"
+                            android:layout_height="55dp"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="20dp"
+                            android:layout_gravity="center"
+                            app:cardElevation="2dp"
+                            android:layout_marginLeft="70dp"
+                            app:cardBackgroundColor="@color/light_red"
+                            android:layout_marginRight="70dp">
 
-                                <!-- Кнопка 5 -->
-                                <androidx.cardview.widget.CardView
-                                    android:id="@+id/cardBtn5"
-                                    android:layout_width="130dp"
-                                    android:layout_height="60dp"
-                                    android:layout_marginBottom="16dp"
-                                    app:cardCornerRadius="20dp"
-                                    app:cardElevation="2dp">
+                            <TextView
+                                android:id="@+id/btn5Text"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:fontFamily="sans-serif"
+                                android:gravity="center"
+                                android:text="5"
+                                android:textColor="#000000"
+                                android:alpha="0.6"
+                                android:textSize="25dp"
+                                android:textStyle="bold"/>
+                        </androidx.cardview.widget.CardView>
 
-                                    <TextView
-                                        android:id="@+id/btn5Text"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:text="5"
-                                        android:textSize="30dp"
-                                        android:gravity="center"
-                                        android:fontFamily="sans-serif"
-                                        android:textColor="#0B0B0B"
-                                        android:background="#FF4747" />
-                                </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardBtn6"
+                            android:layout_width="match_parent"
+                            android:layout_height="55dp"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="20dp"
+                            android:layout_gravity="center"
+                            app:cardElevation="2dp"
+                            android:layout_marginLeft="70dp"
+                            app:cardBackgroundColor="@color/light_purple"
+                            android:layout_marginRight="70dp">
 
-                                <!-- Кнопка 6 -->
-                                <androidx.cardview.widget.CardView
-                                    android:id="@+id/cardBtn6"
-                                    android:layout_width="130dp"
-                                    android:layout_height="60dp"
-                                    android:layout_marginBottom="16dp"
-                                    app:cardCornerRadius="20dp"
-                                    app:cardElevation="2dp">
 
-                                    <TextView
-                                        android:id="@+id/btn6Text"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:text="6"
-                                        android:textSize="30dp"
-                                        android:gravity="center"
-                                        android:fontFamily="sans-serif"
-                                        android:textColor="#0B0B0B"
-                                        android:background="#D7D9FF" />
-                                </androidx.cardview.widget.CardView>
+                        <TextView
+                                android:id="@+id/btn6Text"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:fontFamily="sans-serif"
+                                android:gravity="center"
+                                android:text="6"
+                                android:textColor="#0B0B0B"
+                                android:textSize="25dp"
+                                android:alpha="0.6"
+                                android:textStyle="bold"/>
+                        </androidx.cardview.widget.CardView>
 
-                                <!-- Кнопка 7 -->
-                                <androidx.cardview.widget.CardView
-                                    android:id="@+id/cardBtn7"
-                                    android:layout_width="130dp"
-                                    android:layout_height="60dp"
-                                    android:layout_marginBottom="8dp"
-                                    app:cardCornerRadius="20dp"
-                                    app:cardElevation="2dp">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardBtn7"
+                            android:layout_width="match_parent"
+                            android:layout_height="55dp"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="20dp"
+                            android:layout_gravity="center"
+                            app:cardElevation="2dp"
+                            android:layout_marginLeft="70dp"
+                            app:cardBackgroundColor="@color/light_aqua"
+                            android:layout_marginRight="70dp">
 
-                                    <TextView
-                                        android:id="@+id/btn7Text"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:text="7"
-                                        android:textSize="30dp"
-                                        android:gravity="center"
-                                        android:fontFamily="sans-serif"
-                                        android:textColor="#0B0B0B"
-                                        android:background="#8FE2DB" />
-                                </androidx.cardview.widget.CardView>
+                        <TextView
+                                android:id="@+id/btn7Text"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
 
-                            </LinearLayout>
+                                android:fontFamily="sans-serif"
+                                android:gravity="center"
+                                android:text="7"
+                                android:textColor="#0B0B0B"
+                                android:textSize="25dp"
+                                android:alpha="0.6"
+                                android:textStyle="bold"/>
+                        </androidx.cardview.widget.CardView>
 
-                            <!-- Пустое пространство справа (как в макете) -->
-                            <View
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1" />
 
-                        </LinearLayout>
 
                     </LinearLayout>
 
