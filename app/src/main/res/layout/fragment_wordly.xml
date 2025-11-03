@@ -23,13 +23,13 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:layout_marginBottom="12dp"
+
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="45dp"
+                android:layout_marginTop="50dp"
                 app:cardCornerRadius="20dp"
                 android:clickable="true"
-                app:cardBackgroundColor="@color/light_blue"
+                app:cardBackgroundColor="@color/light_cyan"
                 app:cardUseCompatPadding="true">
 
                 <TextView
@@ -72,7 +72,7 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
-                android:layout_marginBottom="20dp"
+
                 android:progress="50"
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:clickable="true"
-                app:cardBackgroundColor="#F8C84E"
+                app:cardBackgroundColor="@color/light_aqua"
                 app:cardCornerRadius="20dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
@@ -181,7 +181,7 @@
                             android:layout_gravity="center"
                             app:cardElevation="2dp"
                             android:layout_marginLeft="70dp"
-                            app:cardBackgroundColor="@color/light_green"
+                            app:cardBackgroundColor="@color/light_aqua"
                             android:layout_marginRight="70dp">
 
                         <TextView
@@ -191,7 +191,7 @@
 
                                 android:fontFamily="sans-serif"
                                 android:gravity="center"
-                                android:text="4"
+                                android:text="Легкий"
                                 android:textColor="#0B0B0B"
                                 android:textSize="25dp"
                                 android:alpha="0.6"
@@ -207,7 +207,7 @@
                             android:layout_gravity="center"
                             app:cardElevation="2dp"
                             android:layout_marginLeft="70dp"
-                            app:cardBackgroundColor="@color/light_red"
+                            app:cardBackgroundColor="@color/light_green"
                             android:layout_marginRight="70dp">
 
                             <TextView
@@ -216,7 +216,7 @@
                                 android:layout_height="match_parent"
                                 android:fontFamily="sans-serif"
                                 android:gravity="center"
-                                android:text="5"
+                                android:text="Нормальный"
                                 android:textColor="#000000"
                                 android:alpha="0.6"
                                 android:textSize="25dp"
@@ -232,7 +232,7 @@
                             android:layout_gravity="center"
                             app:cardElevation="2dp"
                             android:layout_marginLeft="70dp"
-                            app:cardBackgroundColor="@color/light_purple"
+                            app:cardBackgroundColor="@color/yellow"
                             android:layout_marginRight="70dp">
 
 
@@ -242,7 +242,7 @@
                                 android:layout_height="match_parent"
                                 android:fontFamily="sans-serif"
                                 android:gravity="center"
-                                android:text="6"
+                                android:text="Средний"
                                 android:textColor="#0B0B0B"
                                 android:textSize="25dp"
                                 android:alpha="0.6"
@@ -258,7 +258,7 @@
                             android:layout_gravity="center"
                             app:cardElevation="2dp"
                             android:layout_marginLeft="70dp"
-                            app:cardBackgroundColor="@color/light_aqua"
+                            app:cardBackgroundColor="@color/light_red"
                             android:layout_marginRight="70dp">
 
                         <TextView
@@ -268,7 +268,7 @@
 
                                 android:fontFamily="sans-serif"
                                 android:gravity="center"
-                                android:text="7"
+                                android:text="Тяжелый"
                                 android:textColor="#0B0B0B"
                                 android:textSize="25dp"
                                 android:alpha="0.6"

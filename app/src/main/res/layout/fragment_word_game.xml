@@ -24,7 +24,7 @@
                 android:layout_marginTop="45dp"
                 app:cardCornerRadius="20dp"
                 android:clickable="true"
-                app:cardBackgroundColor="@color/light_blue"
+                app:cardBackgroundColor="@color/light_cyan"
                 app:cardUseCompatPadding="true">
 
                 <TextView
@@ -52,135 +52,119 @@
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"/>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/light_yellow"
-                        android:layout_gravity="center" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#F5BFA3"
+                    android:layout_gravity="center" />
 
-                    <LinearLayout
+                <View
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_gravity="end|bottom"
+                    android:alpha="0.4"
+                    android:background="@drawable/watch_time_stopwatch_icon_250181"
+                    android:rotation="19"
+                    android:translationX="30dp"
+                    android:translationY="30dp" />
+
+                <!-- Содержимое карточки -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/titleText_Speed"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:fontFamily="sans-serif-medium"
+                        android:paddingBottom="12dp"
+                        android:text="На скорость"
+                        android:textAlignment="center"
+                        android:textColor="#5B3D33"
+                        android:textSize="25dp" />
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardBtn30_Speed"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="70dp"
+                        android:layout_marginRight="70dp"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="@color/light_green"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp">
 
                         <TextView
-                            android:id="@+id/titleText_Speed"
+                            android:id="@+id/btn30_Speed"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-medium"
-                            android:paddingBottom="12dp"
-                            android:text="На скорость"
-                            android:textAlignment="center"
-                            android:textColor="#5B3D33"
-                            android:textSize="25dp" />
+                            android:layout_height="match_parent"
 
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/cardBtn30_Speed"
+                            android:alpha="0.6"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center"
+                            android:text="Легкий"
+                            android:textColor="#0B0B0B"
+                            android:textSize="25dp"
+                            android:textStyle="bold" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardBtn20_Speed"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="70dp"
+                        android:layout_marginRight="70dp"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="@color/light_yellow"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp">
+
+                        <TextView
+                            android:id="@+id/cardText20_Speed"
                             android:layout_width="match_parent"
-                            android:layout_height="55dp"
-                            android:layout_marginBottom="16dp"
-                            app:cardCornerRadius="20dp"
-                            android:layout_gravity="center"
-                            app:cardElevation="2dp"
-                            android:layout_marginLeft="70dp"
-                            app:cardBackgroundColor="@color/light_green"
-                            android:layout_marginRight="70dp">
+                            android:layout_height="match_parent"
+                            android:alpha="0.6"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center"
+                            android:text="Средний"
+                            android:textColor="#000000"
+                            android:textSize="25dp"
+                            android:textStyle="bold" />
+                    </androidx.cardview.widget.CardView>
 
-                            <TextView
-                                android:id="@+id/btn30Text_Speed"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardBtn10_Speed"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="70dp"
+                        android:layout_marginRight="70dp"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="@color/light_red"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp">
 
-                                android:fontFamily="sans-serif"
-                                android:gravity="center"
-                                android:text="30"
-                                android:textColor="#0B0B0B"
-                                android:textSize="25dp"
-                                android:alpha="0.6"
-                                android:textStyle="bold" />
-                        </androidx.cardview.widget.CardView>
 
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/cardBtn20_Speed"
+                        <TextView
+                            android:id="@+id/cardBtn10_SpeedText"
                             android:layout_width="match_parent"
-                            android:layout_height="55dp"
-                            android:layout_marginBottom="16dp"
-                            app:cardCornerRadius="20dp"
-                            android:layout_gravity="center"
-                            app:cardElevation="2dp"
-                            android:layout_marginLeft="70dp"
-                            app:cardBackgroundColor="@color/button_1"
-                            android:layout_marginRight="70dp">
+                            android:layout_height="match_parent"
+                            android:alpha="0.6"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center"
+                            android:text="Тяжелый"
+                            android:textColor="#0B0B0B"
+                            android:textSize="25dp"
+                            android:textStyle="bold" />
+                    </androidx.cardview.widget.CardView>
 
-                            <TextView
-                                android:id="@+id/btn20_Speed"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:fontFamily="sans-serif"
-                                android:gravity="center"
-                                android:text="20"
-                                android:textColor="#000000"
-                                android:alpha="0.6"
-                                android:textSize="25dp"
-                                android:textStyle="bold"/>
-                        </androidx.cardview.widget.CardView>
-
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/cardBtn10_Speed"
-                            android:layout_width="match_parent"
-                            android:layout_height="55dp"
-                            android:layout_marginBottom="16dp"
-                            app:cardCornerRadius="20dp"
-                            android:layout_gravity="center"
-                            app:cardElevation="2dp"
-                            android:layout_marginLeft="70dp"
-                            app:cardBackgroundColor="@color/light_red"
-                            android:layout_marginRight="70dp">
-
-
-                            <TextView
-                                android:id="@+id/btn10_Speed"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:fontFamily="sans-serif"
-                                android:gravity="center"
-                                android:text="10"
-                                android:textColor="#0B0B0B"
-                                android:textSize="25dp"
-                                android:alpha="0.6"
-                                android:textStyle="bold"/>
-                        </androidx.cardview.widget.CardView>
-
-
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            >
-
-                            <!-- Левый столбец с кнопками -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:layout_marginStart="6dp"
-                                android:layout_marginTop="6dp"
-                                android:layout_marginBottom="6dp"/>
-
-                            <!-- Пустое пространство справа (как в макете) -->
-                            <View
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </FrameLayout>
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -201,10 +185,18 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="#F5BFA3"
+                        android:background="@color/light_blue"
                         android:layout_gravity="center" />
 
-
+                    <View
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="end|bottom"
+                        android:alpha="0.4"
+                        android:background="@drawable/snail_slug_slow_shell_animals_icon_209528"
+                        android:rotation="19"
+                        android:translationX="30dp"
+                        android:translationY="30dp" />
 
 
                     <LinearLayout
@@ -232,7 +224,7 @@
                             android:layout_gravity="center"
                             app:cardElevation="2dp"
                             android:layout_marginLeft="70dp"
-                            app:cardBackgroundColor="@color/light_green"
+                            app:cardBackgroundColor="@color/light_purple"
                             android:layout_marginRight="70dp">
 
                             <TextView
@@ -242,7 +234,7 @@
 
                                 android:fontFamily="sans-serif"
                                 android:gravity="center"
-                                android:text="4"
+                                android:text="Короткий"
                                 android:textColor="#0B0B0B"
                                 android:textSize="25dp"
                                 android:alpha="0.6"
@@ -258,7 +250,7 @@
                             android:layout_gravity="center"
                             app:cardElevation="2dp"
                             android:layout_marginLeft="70dp"
-                            app:cardBackgroundColor="@color/light_red"
+                            app:cardBackgroundColor="@color/yellow"
                             android:layout_marginRight="70dp">
 
                             <TextView
@@ -267,7 +259,7 @@
                                 android:layout_height="match_parent"
                                 android:fontFamily="sans-serif"
                                 android:gravity="center"
-                                android:text="5"
+                                android:text="Обычный"
                                 android:textColor="#000000"
                                 android:alpha="0.6"
                                 android:textSize="25dp"
@@ -283,7 +275,7 @@
                             android:layout_gravity="center"
                             app:cardElevation="2dp"
                             android:layout_marginLeft="70dp"
-                            app:cardBackgroundColor="@color/light_purple"
+                            app:cardBackgroundColor="@color/light_aqua"
                             android:layout_marginRight="70dp">
 
 
@@ -293,7 +285,7 @@
                                 android:layout_height="match_parent"
                                 android:fontFamily="sans-serif"
                                 android:gravity="center"
-                                android:text="6"
+                                android:text="Долгий"
                                 android:textColor="#0B0B0B"
                                 android:textSize="25dp"
                                 android:alpha="0.6"
