@@ -1,4 +1,4 @@
-package com.example.wordquarium.ui;
+package com.example.wordquarium.ui.fragments;
 
 import android.os.Bundle;
 
@@ -10,7 +10,9 @@ import android.view.ViewGroup;
 
 import com.example.wordquarium.R;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class WordGameFragment extends Fragment {
 
 

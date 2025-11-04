@@ -5,9 +5,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.wordquarium.ui.CryptogramFragment;
-import com.example.wordquarium.ui.WordGameFragment;
-import com.example.wordquarium.ui.WordlyFragment;
+import com.example.wordquarium.ui.fragments.CryptogramFragment;
+import com.example.wordquarium.ui.fragments.WordGameFragment;
+import com.example.wordquarium.ui.fragments.WordlyFragment;
 
 public class ViewPagerAdapter  extends FragmentStateAdapter {
     public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {

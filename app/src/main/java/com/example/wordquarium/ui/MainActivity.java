@@ -7,20 +7,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.wordquarium.R;
 import com.example.wordquarium.logic.adapters.ViewPagerAdapter;
+import com.example.wordquarium.logic.viewmodels.MainViewModel;
+import com.example.wordquarium.ui.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
+import android.content.Intent;
+import android.widget.ImageView;
 import java.util.Objects;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
+    private MainViewModel mainViewModel;
     private ViewPagerAdapter adapter;
     private BottomNavigationView bottomNavigationView;
+    private ImageView settsButton;
+
     private int currentSelectedItemId = -1;
 
 
@@ -36,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         getAllId();
+        //в активности  this, а в фрагментах обязоательно  requareActivity()
+
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         adapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(adapter);
         viewPager.setUserInputEnabled(true);
@@ -70,11 +82,23 @@ public class MainActivity extends AppCompatActivity {
             viewPager.setCurrentItem(1, false);
         }
 
+
+        settsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+            finish();
+        });
+        adapter = new ViewPagerAdapter(this);
+        viewPager.setAdapter(adapter);
     }
 
     private void getAllId() {
 
         bottomNavigationView=findViewById(R.id.navig_menu);
         viewPager=findViewById(R.id.viewPager);
+        settsButton=findViewById(R.id.setts_button);
+
     }
+
+
 }

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.WordGameFragment">
+    tools:context=".ui.fragments.WordGameFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -15,12 +15,25 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_marginTop="55dp"
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.6"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="Слова"
+                android:textColor="#000000"
+                android:textSize="25dp"
+                android:textStyle="bold" />
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginTop="55dp"
                 app:cardCornerRadius="20dp"
                 android:clickable="true"
                 app:cardBackgroundColor="@color/light_cyan"
@@ -29,11 +42,11 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:alpha="0.6"
                     android:gravity="center"
                     android:padding="8dp"
                     android:text="Бесконечно"
                     android:textColor="@color/black"
-                    android:alpha="0.6"
                     android:textSize="25sp"
                     android:textStyle="bold" />
             </androidx.cardview.widget.CardView>
@@ -63,7 +76,7 @@
                     android:layout_height="200dp"
                     android:layout_gravity="end|bottom"
                     android:alpha="0.4"
-                    android:background="@drawable/watch_time_stopwatch_icon_250181"
+                    android:background="@drawable/watch"
                     android:rotation="19"
                     android:translationX="30dp"
                     android:translationY="30dp" />
@@ -191,7 +204,7 @@
                         android:layout_height="200dp"
                         android:layout_gravity="end|bottom"
                         android:alpha="0.4"
-                        android:background="@drawable/snail_slug_slow_shell_animals_icon_209528"
+                        android:background="@drawable/snail"
                         android:rotation="19"
                         android:translationX="30dp"
                         android:translationY="30dp" />

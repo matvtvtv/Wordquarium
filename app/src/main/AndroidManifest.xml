@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".logic.hilt.WordquariumApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,6 +12,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wordquarium">
+        <activity
+            android:name=".ui.RegistationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Wordquarium" />
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">

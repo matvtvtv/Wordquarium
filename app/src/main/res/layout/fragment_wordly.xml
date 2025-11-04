@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.WordlyFragment">
+    tools:context=".ui.fragments.WordlyFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -17,7 +17,18 @@
 
             android:gravity="top">
 
-            <!-- Существующие карточки (Ваши) -->
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_marginTop="55dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.6"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="Словариум"
+                android:textColor="#000000"
+                android:textSize="25dp"
+                android:textStyle="bold" />
 
 
             <androidx.cardview.widget.CardView
@@ -26,7 +37,6 @@
 
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="55dp"
                 app:cardCornerRadius="20dp"
                 android:clickable="true"
                 app:cardBackgroundColor="@color/light_cyan"
@@ -151,7 +161,7 @@
                         android:layout_height="321dp"
                         android:layout_gravity="end|bottom"
                         android:alpha="0.4"
-                        android:background="@drawable/copilot_20251023_151750"
+                        android:background="@drawable/aim"
                         android:translationX="30dp"
                         android:translationY="30dp" />
 

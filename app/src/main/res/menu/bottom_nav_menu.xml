@@ -1,15 +1,18 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+   >
     <item
         android:id="@+id/nav_stats"
-        android:icon="@android:drawable/btn_minus"
-        android:title="WordGameFragment" />
+        android:icon="@drawable/words_icon"
+        android:title="WordGameFragment"
+         />
+
     <item
         android:id="@+id/nav_home"
-        android:icon="@android:drawable/btn_minus"
+        android:icon="@drawable/wordly_icon"
         android:title="WordlyFragment" />
     <item
         android:id="@+id/nav_settings"
-        android:icon="@android:drawable/btn_minus"
+        android:icon="@drawable/lock"
         android:title="CryptogramFragment" />
 
 </menu>
