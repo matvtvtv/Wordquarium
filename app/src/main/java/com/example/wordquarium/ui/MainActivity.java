@@ -1,5 +1,6 @@
 package com.example.wordquarium.ui;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -23,12 +24,15 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
+    private SharedPreferences preferences;
+
 
     private ViewPager2 viewPager;
     private MainViewModel mainViewModel;
     private ViewPagerAdapter adapter;
     private BottomNavigationView bottomNavigationView;
     private ImageView settsButton;
+    private ImageView statButton;
 
     private int currentSelectedItemId = -1;
 
@@ -43,6 +47,17 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        preferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        int isUserLoggedIn = preferences.getInt("userId", -1); // Проверка авторизации
+        boolean isFirstRun = preferences.getBoolean("isFirstRun", true);
+
+
+        if (isUserLoggedIn == -1) {
+            Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
 
         getAllId();
         //в активности  this, а в фрагментах обязоательно  requareActivity()
@@ -90,6 +105,12 @@ public class MainActivity extends AppCompatActivity {
         });
         adapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(adapter);
+        statButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
     }
 
     private void getAllId() {
@@ -97,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView=findViewById(R.id.navig_menu);
         viewPager=findViewById(R.id.viewPager);
         settsButton=findViewById(R.id.setts_button);
+        statButton=findViewById(R.id.stat_button);
+
 
     }
 

@@ -42,7 +42,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.hilt.android)
     implementation(libs.lombok)
-
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.fragment)
@@ -51,6 +50,11 @@ dependencies {
     implementation(libs.cardview)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
+    implementation(libs.convertergson)
+    implementation(libs.flexbox)
+
 
     annotationProcessor(libs.lombok)
 

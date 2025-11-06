@@ -1,0 +1,147 @@
+package com.example.wordquarium.ui;
+
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.example.wordquarium.R;
+import com.example.wordquarium.data.model.PlayerModel;
+import com.example.wordquarium.data.network.CallbackUser;
+import com.example.wordquarium.data.network.DataFromUserAPI;
+import com.example.wordquarium.data.repository.PlayerRepository;
+import com.example.wordquarium.data.repository.PlayerSettingsRepository;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+
+
+public class RegistrationActivity extends AppCompatActivity {
+
+    private EditText editTextLogin, editTextPassword;
+    private TextView textViewMessage;
+    private PlayerRepository playerRepository;
+    private PlayerSettingsRepository playerSettingsRepository;
+
+    private final ExecutorService executor = Executors.newFixedThreadPool(4);
+
+    private DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_registration);
+
+
+        editTextLogin = findViewById(R.id.editTextLogin);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        CardView btnRegister = findViewById(R.id.registation_card);
+        CardView btnLog = findViewById(R.id.entarance_card);
+        textViewMessage = findViewById(R.id.textViewMessage);
+
+        playerRepository = PlayerRepository.getInstance(this);
+        playerSettingsRepository = PlayerSettingsRepository.getInstance(this);
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                registerUser();
+            }
+        });
+        btnLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginUser();
+            }
+        });
+    }
+
+    private void registerUser() {
+        String login = editTextLogin.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+
+
+        if (login.isEmpty() || password.isEmpty()) {
+            textViewMessage.setText("Введите логин и пароль!");
+            return;
+        }
+        executor.execute(() -> dataFromUserAPI.getRegistration(login, password, new CallbackUser() {
+            @Override
+            public void onSuccess(PlayerModel playerModel) {
+                saveToRepository(playerModel);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                textViewMessage.setText("Логин уже существует!");
+            }
+        }));
+
+        if (playerRepository.isValidUser(login)) {
+            textViewMessage.setText("Логин уже существует!");
+        } else {
+
+
+        }
+    }
+
+    private void loginUser() {
+        String login = editTextLogin.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+
+        if (login.isEmpty() || password.isEmpty()) {
+            textViewMessage.setText("Введите логин и пароль!");
+            return;
+        }
+
+
+        executor.execute(() -> dataFromUserAPI.getEnter(login, password, new CallbackUser() {
+            @Override
+            public void onSuccess(PlayerModel playerModel) {
+                saveToRepository(playerModel);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                runOnUiThread(() -> {
+                    Toast.makeText(RegistrationActivity.this, "Ошибка входа: " + throwable.getMessage(), Toast.LENGTH_LONG).show();
+                });
+                textViewMessage.setText("Аккаунт не найден!");
+            }
+        }));
+
+    }
+
+    private void saveToRepository(PlayerModel playerModel) {
+        playerRepository.userRegistration(playerModel, this);
+        PlayerRepository playerRepository = PlayerRepository.getInstance(getApplicationContext());
+        int userId = playerRepository.getCurrentUserId();
+        playerSettingsRepository.userSettingsRegistration(userId, this);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    // Метод для сохранения ID пользователя
+    private void saveUserId(int userId) {
+        SharedPreferences preferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("userId", userId);
+        editor.apply();
+    }
+}
