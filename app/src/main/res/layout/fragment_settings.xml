@@ -28,18 +28,34 @@
                 app:cardUseCompatPadding="true">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/textView3"
+                        android:id="@+id/yourLogin"
                         android:layout_width="59dp"
                         android:layout_height="20dp"
                         android:text="TextView"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.67"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.68" />
+
+                    <ImageView
+                        android:id="@+id/profImage"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:background="@drawable/key_background"
+                        android:src="@drawable/_4208458_717"
+                        app:circularflow_radiusInDP="20"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
@@ -53,18 +69,35 @@
                 app:cardUseCompatPadding="true">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/gameSound"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/textView43343443"
-                        android:layout_width="59dp"
-                        android:layout_height="20dp"
-                        android:text="TextView"
+                        android:id="@+id/gameSoundText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="Звук игры"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toStartOf="@+id/gameSound"
+                        app:layout_constraintTop_toTopOf="@+id/gameSound" />
+
+                    <Switch
+                        android:id="@+id/gameSwitchSound"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginEnd="30dp"
+                        android:thumbTint="@color/switch_thumb_color"
+                        android:trackTint="@color/switch_track_color"
+                        app:layout_constraintBottom_toBottomOf="@+id/gameSound"
+                        app:layout_constraintEnd_toEndOf="@+id/gameSound"
+                        app:layout_constraintTop_toTopOf="@+id/gameSound"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
@@ -79,18 +112,34 @@
                 app:cardUseCompatPadding="true">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/gameVibration"
+
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/textView43434"
-                        android:layout_width="59dp"
-                        android:layout_height="20dp"
-                        android:text="TextView"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:id="@+id/gameVibrationText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="Виброотклик"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/gameVibration"
+                        app:layout_constraintStart_toStartOf="@+id/gameVibration"
+                        app:layout_constraintTop_toTopOf="@+id/gameVibration" />
+
+                    <Switch
+                        android:id="@+id/gameSwitchVibration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginEnd="30dp"
+                        android:thumbTint="@color/switch_thumb_color"
+                        android:trackTint="@color/switch_track_color"
+                        app:layout_constraintBottom_toBottomOf="@+id/gameVibration"
+                        app:layout_constraintEnd_toEndOf="@+id/gameVibration"
+                        app:layout_constraintTop_toTopOf="@+id/gameVibration"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
@@ -105,22 +154,38 @@
                 app:cardUseCompatPadding="true">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/gameNotification"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/textView434"
-                        android:layout_width="59dp"
-                        android:layout_height="20dp"
-                        android:text="TextView"
+                        android:id="@+id/gameNotificationText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="Уведомления"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/gameNotification"
+                        app:layout_constraintStart_toStartOf="@+id/gameNotification"
+                        app:layout_constraintTop_toTopOf="@+id/gameNotification" />
+
+                    <Switch
+                        android:id="@+id/gameSwitchNotification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginEnd="30dp"
+                        android:thumbTint="@color/switch_thumb_color"
+                        android:trackTint="@color/switch_track_color"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintEnd_toEndOf="@+id/gameNotification"
+                        app:layout_constraintTop_toTopOf="@+id/gameNotification"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
+                android:id="@+id/accountExit"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginStart="10dp"
@@ -131,14 +196,17 @@
                 app:cardUseCompatPadding="true">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/textView4"
-                        android:layout_width="59dp"
-                        android:layout_height="20dp"
-                        android:text="TextView"
+                        android:id="@+id/accountExitText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Выход из аккаунта"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -147,6 +215,7 @@
 
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
+                android:id="@+id/bugReport"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginStart="10dp"
@@ -161,10 +230,12 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/textView43"
-                        android:layout_width="59dp"
-                        android:layout_height="20dp"
-                        android:text="TextView"
+                        android:id="@+id/bugReportText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Сообщить об ошике"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
