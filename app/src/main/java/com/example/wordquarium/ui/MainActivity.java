@@ -1,6 +1,9 @@
 package com.example.wordquarium.ui;
 
+import static java.security.AccessController.getContext;
+
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -12,12 +15,20 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.wordquarium.R;
+import com.example.wordquarium.data.model.PlayerModel;
+import com.example.wordquarium.data.repository.DatabaseHelper;
+import com.example.wordquarium.data.repository.PlayerRepository;
+import com.example.wordquarium.data.repository.WordsRepository;
 import com.example.wordquarium.logic.adapters.ViewPagerAdapter;
 import com.example.wordquarium.logic.viewmodels.MainViewModel;
 import com.example.wordquarium.ui.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.content.Intent;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
+
 import java.util.Objects;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -33,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private ImageView settsButton;
     private ImageView statButton;
+    private TextView money_text;
 
     private int currentSelectedItemId = -1;
 
@@ -47,21 +59,46 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        // Инициализация SharedPreferences
         preferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         int isUserLoggedIn = preferences.getInt("userId", -1); // Проверка авторизации
         boolean isFirstRun = preferences.getBoolean("isFirstRun", true);
 
+        DatabaseHelper databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        WordsRepository wordsRepository = new WordsRepository(db);
 
+        if (isFirstRun) {
+
+
+            // Импорт слов (однократно при первом запуске)
+            wordsRepository.importWordsFromFile(this);
+            // Сохраняем флаг первого запуска
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("isFirstRun", false);
+            editor.apply();
+        }
+
+        // Если пользователь не авторизован, переходим на RegistrationActivity
         if (isUserLoggedIn == -1) {
             Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
             startActivity(intent);
             finish();
             return;
         }
-
+        PlayerRepository playerRepository = PlayerRepository.getInstance(this);
+        int userId = playerRepository.getCurrentUserId();
+        PlayerModel user = playerRepository.getUserData(userId);
         getAllId();
         //в активности  this, а в фрагментах обязоательно  requareActivity()
+        money_text.setText(String.valueOf(user.getMoney()));
 
+        playerRepository.addOnDataUpdateListener(values -> {
+            Integer newMoney = (Integer) values.get("money");
+            if (newMoney != null) {
+                money_text.setText(String.valueOf(newMoney));
+            }
+        });
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         adapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(adapter);
@@ -119,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager=findViewById(R.id.viewPager);
         settsButton=findViewById(R.id.setts_button);
         statButton=findViewById(R.id.stat_button);
+        money_text=findViewById(R.id.money_text);
 
 
     }

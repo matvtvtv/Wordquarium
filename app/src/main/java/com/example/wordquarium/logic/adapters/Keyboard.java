@@ -1,24 +1,13 @@
 package com.example.wordquarium.logic.adapters;
 
-import static com.google.android.flexbox.JustifyContent.CENTER;
-import static com.google.android.flexbox.JustifyContent.FLEX_START;
-
 import android.content.Context;
-import android.util.Size;
 import android.view.View;
-import android.widget.Button;
 
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import com.example.wordquarium.logic.adapters.KeyboardAdapter;
-import com.example.wordquarium.logic.adapters.LetterStatus;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import lombok.Data;
@@ -39,32 +28,48 @@ public class Keyboard {
 
     public void create(Context context, View view) {
         keyboardAdapter = new KeyboardAdapter(context, keys);
-        if (onKeyClickListener != null) keyboardAdapter.setOnClickListener(onKeyClickListener);
+        if (onKeyClickListener != null) {
+            keyboardAdapter.setOnClickListener(onKeyClickListener);
+        }
 
         keyboard.setAdapter(keyboardAdapter);
+
         FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(context);
         layoutManager.setFlexWrap(FlexWrap.WRAP);
-        layoutManager.setJustifyContent(CENTER);
+        layoutManager.setJustifyContent(com.google.android.flexbox.JustifyContent.CENTER);
         keyboard.setLayoutManager(layoutManager);
     }
 
     public void notifyKeyChanged(int position) {
-        keyboardAdapter.notifyItemChanged(position);
+        if (keyboardAdapter != null) {
+            keyboardAdapter.notifyItemChanged(position);
+        }
     }
 
     public void notifyKeyChanged(Key key) {
-        keyboardAdapter.notifyItemChanged(getKeyPosition(key));
+        int pos = getKeyPosition(key);
+        if (pos >= 0 && keyboardAdapter != null) {
+            keyboardAdapter.notifyItemChanged(pos);
+        }
     }
 
     public Key findByKeyText(String text) {
-        for (Key key: keys) {
-            if(key.getKeyText().equals(text)) return key;
+        if (text == null) return null;
+        for (Key key : keys) {
+            if (text.equals(key.getKeyText())) return key;
         }
         return null;
     }
 
     public int getKeyPosition(Key key) {
-        return keys.indexOf(key);
+        if (key == null) return -1;
+        for (int i = 0; i < keys.size(); i++) {
+            Key k = keys.get(i);
+            if (k != null && k.getKeyText() != null && k.getKeyText().equals(key.getKeyText())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Data
@@ -77,10 +82,10 @@ public class Keyboard {
             this.status = LetterStatus.UNDEFINED;
         }
 
-
         public Key(String keyText, LetterStatus status) {
             this.keyText = keyText;
             this.status = status;
         }
     }
+
 }
