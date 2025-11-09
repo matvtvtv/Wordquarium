@@ -5,17 +5,24 @@ import static com.example.wordquarium.logic.adapters.LetterStatus.GRAY;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,17 +39,23 @@ import com.example.wordquarium.logic.adapters.Keyboard;
 import com.example.wordquarium.logic.adapters.LetterStatus;
 import com.example.wordquarium.ui.fragments.GameChainLogic;
 
+
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 public class GameChainActivity extends AppCompatActivity {
     private ActivityGameChainBinding binding;
 
-    private TextView appWordView;
+    private TextView appWordView1;
+    private TextView appWordView2;
+    private TextView appWordView3;
     private TextView hintView;
+    private TextView textTimer;
     private EditText inputField;
     private Button btnCheck;
     private Button btnSkip;
@@ -54,6 +67,17 @@ public class GameChainActivity extends AppCompatActivity {
     private final Random rnd = new Random();
 
     private GameChainLogic logic;
+
+    private String WordView1 = "...";
+    private String WordView2 = "...";
+    private String WordView3 = "...";
+    private int Number=0;
+
+    private ImageView btnExit;
+    private CountdownTimer countdownTimer;
+    private boolean gamemode;
+    private int time;
+
 
     // клавиши (как у тебя были)
     private final List<Keyboard.Key> keyList = java.util.Arrays.asList(
@@ -92,6 +116,9 @@ public class GameChainActivity extends AppCompatActivity {
         // Инициализация view из binding
         getAllId();
 
+        gamemode= getIntent().getBooleanExtra("GAMEMOD", false);
+        time= getIntent().getIntExtra("TIME", 50);
+
         // Инициализация клавиатуры (используем binding.keyboard)
         Keyboard keyboard = new Keyboard(binding.keyboard, keyList);
         keyboard.setOnKeyClickListener(v -> {
@@ -121,15 +148,21 @@ public class GameChainActivity extends AppCompatActivity {
             }
         });
         keyboard.create(this, binding.getRoot());
-
         logic = new GameChainLogic();
-
+        if(time!=66){
+        countdownTimer = new CountdownTimer(textTimer, time);
+        countdownTimer.start();
+        }else{textTimer.setText("∞");}
         // Запуск новой игры
         startNewGame();
 
         // слушатели кнопок
         btnCheck.setOnClickListener(v -> onPlayerSubmit());
         btnSkip.setOnClickListener(v -> onPlayerSkip());
+        btnExit.setOnClickListener(v -> {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
     }
 
     private void startNewGame() {
@@ -148,7 +181,11 @@ public class GameChainActivity extends AppCompatActivity {
     }
 
     private void updateUIForAppWord(String word) {
-        appWordView.setText(word);
+        appWordView1.setText(word);
+        appWordView2.setText(WordView2);
+        appWordView3.setText(WordView3);
+        WordView3=WordView2;
+        WordView2=word;
         char required = logic.getRequiredStartLetter();
         hintView.setText("Нужно слово на: " + required);
 
@@ -156,11 +193,8 @@ public class GameChainActivity extends AppCompatActivity {
         if (currentHighlightedKey != null) {
             currentHighlightedKey.setStatus(LetterStatus.UNDEFINED);
             if (binding.keyboard != null) {
-                // уведомить адаптер об изменении
                 Keyboard kb = new Keyboard(binding.keyboard, keyList);
-                // лучше использовать существующий экземпляр keyboard — у нас его нет в поле,
-                // поэтому вместо этого пройдём по keyList и вызовем notify через временный объект.
-                // В твоём проекте keyboard хранится локально — если хочешь, можно сохранить как поле.
+
             }
         }
 
@@ -191,33 +225,26 @@ public class GameChainActivity extends AppCompatActivity {
             return;
         }
 
-        // проверка первой буквы
         char required = logic.getRequiredStartLetter();
         if (playerWord.charAt(0) != required) {
             Toast.makeText(this, "Слово должно начинаться с буквы: " + required, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // проверка на повтор
         if (usedWords.contains(playerWord)) {
             Toast.makeText(this, "Это слово уже использовано", Toast.LENGTH_SHORT).show();
             return;
         }
-
 
         if (wordsRepository.isValidWord(playerWord)) {
             Toast.makeText(this, "Похоже, я не знаю такого слова", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // добавляем слово игрока в использованные
         usedWords.add(playerWord);
 
-        // получаем ответ приложения — слово, начинающееся на последнюю букву игрока
         char last = playerWord.charAt(playerWord.length() - 1);
         List<WordsModel> candidates = wordsRepository.getWordsStartingWith(last);
-
-        // фильтруем уже использованные слова
         List<WordsModel> filtered = new ArrayList<>();
         for (WordsModel w : candidates) {
             String up = w.getWord().toUpperCase();
@@ -225,7 +252,6 @@ public class GameChainActivity extends AppCompatActivity {
         }
 
         if (filtered.isEmpty()) {
-            // Игра: приложение не может ответить — победа игрока
             showEndDialog(true, "Приложение не нашло слово — вы победили!");
             return;
         }
@@ -233,16 +259,22 @@ public class GameChainActivity extends AppCompatActivity {
         WordsModel response = filtered.get(rnd.nextInt(filtered.size()));
         String appWord = response.getWord().toUpperCase();
         usedWords.add(appWord);
-
-        // обновляем логику и UI — подсветка буквы сбросится и появится новая
+        Number++;
+        WordView3 = WordView2;
+        WordView2 = playerWord;
         logic.setAppWord(appWord);
         updateUIForAppWord(appWord);
+        if(time!=66){
+        if (gamemode) {
+            countdownTimer.reset(time);
+        }}
 
-        // очищаем поле ввода
+
         inputField.setText("");
     }
 
     private void onPlayerSkip() {
+
         Toast.makeText(this, "Пропуск хода (можно реализовать штраф)", Toast.LENGTH_SHORT).show();
 
         char last = logic.getRequiredStartLetter();
@@ -264,20 +296,54 @@ public class GameChainActivity extends AppCompatActivity {
     }
 
     private void showEndDialog(boolean playerWon, String message) {
+        countdownTimer.stop();
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+        dialog.setContentView(R.layout.popup_game_win);
         dialog.setCancelable(true);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        TextView popupGameText = dialog.findViewById(R.id.textView9);
+        TextView popupGameWin = dialog.findViewById(R.id.popupGameWinText);
+        TextView popupGame = dialog.findViewById(R.id.resoult_win);
+
+        Button btnRestart = dialog.findViewById(R.id.btnRestart);
+        Button btnMainMenu = dialog.findViewById(R.id.btnMainMenu);
+
+        // Безопасные установки текста (передаём строки, а не int)
+        if (popupGameText != null) popupGameText.setText(" ");
+        if (popupGameWin != null) popupGameWin.setText("Вы ответили на");
+        if (popupGame != null) popupGame.setText(String.valueOf(Number+1)+ " слов"); // ← важно: String, а не int
+
+        btnRestart.setOnClickListener(v -> {
+            // Перезапуск той же Activity
+            dialog.dismiss();
+            finish();
+            startActivity(new Intent(this, GameChainActivity.class));
+        });
+
+        btnMainMenu.setOnClickListener(v -> {
+            dialog.dismiss();
+            finish();
+            startActivity(new Intent(this, MainActivity.class));
+        });
+
+
+        // Показать диалог один раз
         dialog.show();
     }
 
+
     private void getAllId() {
-        appWordView = binding.appWord;
+        appWordView1 = binding.appWord1;
+        appWordView2 = binding.appWord2;
+        appWordView3 = binding.appWord3;
+        textTimer = binding.levelGameText;
         hintView = binding.hintStartLetter;
         inputField = binding.inputField;
         btnCheck = binding.btnCheck;
         btnSkip = binding.btnSkip;
+        btnExit = binding.exitButton;
     }
 
     public void vibrateDevice(Context context, long milliseconds) {
@@ -290,4 +356,82 @@ public class GameChainActivity extends AppCompatActivity {
             }
         }
     }
+    public class CountdownTimer {
+
+        private Handler handler = new Handler(Looper.getMainLooper());
+        private Runnable runnable;
+
+        private int remainingSeconds;
+        private boolean running = false;
+
+        private final TextView timerView;
+
+        public CountdownTimer(TextView timerView, int startSeconds) {
+            this.timerView = timerView;
+            this.remainingSeconds = startSeconds;
+            updateText();
+        }
+
+        private void updateText() {
+            int min = remainingSeconds / 60;
+            int sec = remainingSeconds % 60;
+            timerView.setText(String.format("%02d:%02d", min, sec));
+        }
+
+        public void start() {
+            if (running) return;
+            running = true;
+
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (!running) return;
+
+                    if (remainingSeconds > 0) {
+                        remainingSeconds--;
+                        updateText();
+                        handler.postDelayed(this, 1000);
+                    } else {
+                        running = false;
+                        if (!isFinishing()) {
+                            showEndDialog(false, "Время вышло");
+                        }
+                    }
+                }
+            };
+            handler.post(runnable);
+        }
+
+        public void stop() {
+            running = false;
+            if (runnable != null) {
+                handler.removeCallbacks(runnable);
+            }
+        }
+
+        public void reset(int newSeconds) {
+            stop();
+            this.remainingSeconds = newSeconds;
+            updateText();
+            start();
+        }
+
+        public int getRemainingSeconds() {
+            return remainingSeconds;
+        }
+
+        public boolean isRunning() {
+            return running;
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (countdownTimer != null && countdownTimer.isRunning()) {
+            countdownTimer.stop();
+        }
+    }
+
 }

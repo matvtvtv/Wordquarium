@@ -34,9 +34,8 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navig_menu"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="70dp"
         app:labelVisibilityMode="unlabeled"
-
         app:itemIconTint="@color/black"
         android:alpha="0.6"
         android:background="@color/button_1"

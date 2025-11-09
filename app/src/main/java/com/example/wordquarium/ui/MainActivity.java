@@ -1,11 +1,9 @@
 package com.example.wordquarium.ui;
 
-import static java.security.AccessController.getContext;
-
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -21,13 +19,10 @@ import com.example.wordquarium.data.repository.PlayerRepository;
 import com.example.wordquarium.data.repository.WordsRepository;
 import com.example.wordquarium.logic.adapters.ViewPagerAdapter;
 import com.example.wordquarium.logic.viewmodels.MainViewModel;
-import com.example.wordquarium.ui.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import android.content.Intent;
+
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.Objects;
 
@@ -36,7 +31,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences preferences;
-
 
     private ViewPager2 viewPager;
     private MainViewModel mainViewModel;
@@ -48,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
     private int currentSelectedItemId = -1;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        // Инициализация SharedPreferences
+
         preferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        int isUserLoggedIn = preferences.getInt("userId", -1); // Проверка авторизации
+        int isUserLoggedIn = preferences.getInt("userId", -1);
         boolean isFirstRun = preferences.getBoolean("isFirstRun", true);
 
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
@@ -69,28 +62,23 @@ public class MainActivity extends AppCompatActivity {
         WordsRepository wordsRepository = new WordsRepository(db);
 
         if (isFirstRun) {
-
-
-            // Импорт слов (однократно при первом запуске)
             wordsRepository.importWordsFromFile(this);
-            // Сохраняем флаг первого запуска
             SharedPreferences.Editor editor = preferences.edit();
             editor.putBoolean("isFirstRun", false);
             editor.apply();
         }
 
-        // Если пользователь не авторизован, переходим на RegistrationActivity
         if (isUserLoggedIn == -1) {
-            Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, RegistrationActivity.class));
             finish();
             return;
         }
+
         PlayerRepository playerRepository = PlayerRepository.getInstance(this);
         int userId = playerRepository.getCurrentUserId();
         PlayerModel user = playerRepository.getUserData(userId);
+
         getAllId();
-        //в активности  this, а в фрагментах обязоательно  requareActivity()
         money_text.setText(String.valueOf(user.getMoney()));
 
         playerRepository.addOnDataUpdateListener(values -> {
@@ -99,18 +87,29 @@ public class MainActivity extends AppCompatActivity {
                 money_text.setText(String.valueOf(newMoney));
             }
         });
+
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         adapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(adapter);
         viewPager.setUserInputEnabled(true);
         viewPager.setOffscreenPageLimit(2);
+
+        // Восстановление последнего слайда
+        int lastSlide = preferences.getInt("lastSlide", 1); // по умолчанию 1
+        viewPager.setCurrentItem(lastSlide, false);
+
+        // Сохраняем текущий слайд при смене
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 bottomNavigationView.getMenu().getItem(position).setChecked(true);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putInt("lastSlide", position);
+                editor.apply();
             }
         });
+
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == currentSelectedItemId) {
@@ -130,36 +129,27 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
+
         if (savedInstanceState == null) {
-            viewPager.setCurrentItem(1, false);
+            viewPager.setCurrentItem(lastSlide, false);
         }
 
-
         settsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-            finish();
-        });
-        adapter = new ViewPagerAdapter(this);
-        viewPager.setAdapter(adapter);
-        statButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, SettingsActivity.class));
             finish();
         });
 
+        statButton.setOnClickListener(v -> {
+            startActivity(new Intent(this, RegistrationActivity.class));
+            finish();
+        });
     }
 
     private void getAllId() {
-
-        bottomNavigationView=findViewById(R.id.navig_menu);
-        viewPager=findViewById(R.id.viewPager);
-        settsButton=findViewById(R.id.setts_button);
-        statButton=findViewById(R.id.stat_button);
-        money_text=findViewById(R.id.money_text);
-
-
+        bottomNavigationView = findViewById(R.id.navig_menu);
+        viewPager = findViewById(R.id.viewPager);
+        settsButton = findViewById(R.id.setts_button);
+        statButton = findViewById(R.id.stat_button);
+        money_text = findViewById(R.id.money_text);
     }
-
-
 }

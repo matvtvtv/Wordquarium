@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.wordquarium.ui.fragments.CryptogramFragment;
-import com.example.wordquarium.ui.fragments.WordGameFragment;
+import com.example.wordquarium.ui.fragments.ChainFragment;
 import com.example.wordquarium.ui.fragments.WordlyFragment;
 
 public class ViewPagerAdapter  extends FragmentStateAdapter {
@@ -19,7 +19,7 @@ public class ViewPagerAdapter  extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new WordGameFragment();
+                return new ChainFragment();
             case 1:
                 return new WordlyFragment();
             case 2:

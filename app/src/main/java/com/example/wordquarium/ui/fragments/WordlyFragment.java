@@ -53,31 +53,7 @@ public class WordlyFragment extends Fragment {
         int userId = playerRepository.getCurrentUserId();
         PlayerModel user = playerRepository.getUserData(userId);
 
-//        level.setText("Level № " + String.valueOf(user.getLevel()));
-//        playerRepository.addOnDataUpdateListener(values -> {
-//            Integer newLevel = (Integer) values.get("level");
-//            if (newLevel != null) {
-//                level.setText("Level № " + String.valueOf(newLevel));
-//            }
-//        });
-//
-//
-//        level.setText("Level № " + String.valueOf(user.getLevel()));
 
-//        playerRepository.addOnDataUpdateListener(values -> {
-//            Integer newLevel = (Integer) values.get("level");
-//            if (newLevel != null) {
-//                level.setText("Level № " + String.valueOf(newLevel));
-//            }
-//        });
-
-//        moneyText.setText(String.valueOf(user.getMoney()));
-//        playerRepository.addOnDataUpdateListener(values -> {
-//            Integer newMoney = (Integer) values.get("money");
-//            if (newMoney != null) {
-//                moneyText.setText(String.valueOf(newMoney));
-//            }
-//        });
 
         word_day.setOnClickListener(v -> {
             ContentValues values = new ContentValues();

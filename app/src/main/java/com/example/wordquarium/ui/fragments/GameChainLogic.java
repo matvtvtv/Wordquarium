@@ -22,9 +22,22 @@ public class GameChainLogic {
     public String getAppWord() { return appWord; }
 
 
-    // буква, с которой игрок должен начинать свое слово
+
+
     public char getRequiredStartLetter() {
         if (appWord == null || appWord.isEmpty()) return '\0';
-        return appWord.charAt(appWord.length() - 1);
+
+
+        // Берём последнюю реальную букву
+        int lastIndex = appWord.length() - 1;
+        char last = appWord.charAt(lastIndex);
+
+        // Если последний символ Ъ или Ь — берём предыдущий
+        if ((last == 'Ъ' || last == 'Ь') && lastIndex > 0) {
+            return appWord.charAt(lastIndex - 1);
+        }
+
+        return last;
     }
+
 }
