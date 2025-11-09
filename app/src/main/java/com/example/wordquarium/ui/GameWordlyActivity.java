@@ -233,7 +233,7 @@ public class GameWordlyActivity extends AppCompatActivity {
             // Проверка: существует ли введённое слово в базе данных
             try {
                 if(check_of_word==1) {
-                    if (!wordsRepository.isValidWord(guess)) {
+                    if (wordsRepository.isValidWord(guess)) {
                         Toast.makeText(getApplicationContext(), "Похоже, я не знаю такого слова", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -539,14 +539,7 @@ public class GameWordlyActivity extends AppCompatActivity {
         hintDialog.show();
     }
 
-    /**
-     * Выполняет выдачу одной подсказки: проверяет деньги, выбирает случайный неоткрытый индекс,
-     * списывает деньги, обновляет UI и сохраняет изменения.
-     *
-     * @param popupHint    TextView с текущим состоянием подсказки (например "*я**")
-     * @param moneyCost    TextView с информацией о стоимости следующей подсказки
-     * @param moneyText    TextView с текущим числом монет у игрока
-     */
+
     @SuppressLint("SetTextI18n")
     private void updateHint(TextView popupHint, TextView moneyCost, TextView moneyText) {
         if (hintWord == null) {

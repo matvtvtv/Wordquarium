@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
@@ -33,10 +35,11 @@ import java.io.IOException;
 
 public class SettingsFragment extends Fragment {
 
+    private static final String TAG = "SettingsFragment";
+
     private TextView login;
     private CardView accountExit;
     private CardView bugRep;
-    //private ImageView picture_prof;
     private ImageView picture;
     private Switch mySwitchSound;
     private Switch mySwitchVibration;
@@ -44,6 +47,8 @@ public class SettingsFragment extends Fragment {
     private static final int PICK_IMAGE_REQUEST = 1;
     private PlayerRepository playerRepository;
     private PlayerSettingsRepository playerSettingsRepository;
+    public int user_Id;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,88 +58,105 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        // Получаем view-safe ссылки (через root)
         getAllId(view);
 
-
-
+        // Player repo
         playerRepository = PlayerRepository.getInstance(getContext());
-        int userId = playerRepository.getCurrentUserId();
-        PlayerModel player = playerRepository.getUserData(userId);
-
-        login.setSelected(true);
-        if (player != null) {
-            login.setText(player.getLogin());
+        int userId = -1;
+        if (playerRepository != null) {
+            userId = playerRepository.getCurrentUserId();
+            PlayerModel player = playerRepository.getUserData(userId);
+            if (login != null) {
+                login.setSelected(true);
+                if (player != null) {
+                    login.setText(player.getLogin());
+                } else {
+                   // login.setText(getString(R.string.default_login_text)); // put a default in strings.xml if you want
+                }
+            }
+        } else {
+            Log.w(TAG, "playerRepository is null");
         }
 
+        // Account exit
+        if (accountExit != null) {
+            accountExit.setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), RegistrationActivity.class);
+                startActivity(intent);
+            });
+        }
 
-        accountExit.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), RegistrationActivity.class);
-            startActivity(intent);
-        });
-
-
-
-
-
+        // Player settings repo
         playerSettingsRepository = PlayerSettingsRepository.getInstance(getContext());
         int user_Id = playerSettingsRepository.getCurrentUserId();
         PlayerSettingsModel user = playerSettingsRepository.getUserData(user_Id);
 
 
-        mySwitchSound.setChecked( user.getSound() == 1);
-        mySwitchSound.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int newSoundValue = isChecked ? 1 : 0;
+        // Настройка переключателей — с проверками null
+        if (mySwitchSound != null && user != null) {
+            mySwitchSound.setChecked(user.getSound() == 1);
+            mySwitchSound.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                int newSoundValue = isChecked ? 1 : 0;
+                ContentValues values = new ContentValues();
+                values.put("sound", newSoundValue);
+                playerSettingsRepository.updateUserData(user_Id, values);
+            });
+        }
 
-            ContentValues values = new ContentValues();
-            values.put("sound", newSoundValue);
+        if (mySwitchVibration != null && user != null) {
+            mySwitchVibration.setChecked(user.getVibration() == 1);
+            mySwitchVibration.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                int newVibrationValue = isChecked ? 1 : 0;
+                ContentValues values = new ContentValues();
+                values.put("vibration", newVibrationValue);
+                playerSettingsRepository.updateUserData(user_Id, values);
+            });
+        }
 
-            playerSettingsRepository.updateUserData(user_Id, values);
-        });
+        // Исправленная строка: notification переключатель должен смотреть на поле notification
+        if (mySwitchNotification != null && user != null) {
+            mySwitchNotification.setChecked(user.getNotification() == 1);
+            mySwitchNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                int newNotificationValue = isChecked ? 1 : 0;
+                ContentValues values = new ContentValues();
+                values.put("notification", newNotificationValue);
+                playerSettingsRepository.updateUserData(user_Id, values);
+            });
+        }
 
-        mySwitchVibration.setChecked( user.getVibration() == 1);
-        mySwitchVibration.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int newVibrationValue = isChecked ? 1 : 0;
+        // bug report
+        if (bugRep != null) {
+            bugRep.setOnClickListener(v -> sendEmailToAgency());
+        }
 
-            ContentValues values = new ContentValues();
-            values.put("vibration", newVibrationValue);
-
-            playerSettingsRepository.updateUserData(user_Id, values);
-        });
-
-        mySwitchNotification.setChecked( user.getVibration() == 1);
-        mySwitchNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int newNotificationValue = isChecked ? 1 : 0;
-
-            ContentValues values = new ContentValues();
-            values.put("notification", newNotificationValue);
-
-            playerSettingsRepository.updateUserData(user_Id, values);
-        });
-
-        bugRep.setOnClickListener(v -> sendEmailToAgency());
-        bugRep.setOnClickListener(v -> sendEmailToAgency());
+        // Оформление и загрузка профиля — проверки на null
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.RECTANGLE);
         drawable.setCornerRadius(50);
         drawable.setColor(Color.TRANSPARENT);
-        loadProfileImage();
-        picture.setBackground(drawable);
-        picture.setClipToOutline(true);
 
-        picture.setOnClickListener(v -> openGallery());
+        if (picture != null) {
+            picture.setBackground(drawable);
+            picture.setClipToOutline(true);
+            picture.setOnClickListener(v -> openGallery());
+            loadProfileImageSafely();
+        } else {
+            Log.w(TAG, "profile ImageView is null — cannot set background or click listener");
+        }
 
         return view;
     }
 
     private void getAllId(View view) {
-        picture=view.findViewById(R.id.profImage);
+        // Используем root.findViewById — безопасно для фрагмента
+        picture = view.findViewById(R.id.profImage);
         accountExit = view.findViewById(R.id.accountExit);
         bugRep = view.findViewById(R.id.bugReport);
         login = view.findViewById(R.id.yourLogin);
         mySwitchSound = view.findViewById(R.id.gameSwitchSound);
         mySwitchVibration = view.findViewById(R.id.gameSwitchVibration);
         mySwitchNotification = view.findViewById(R.id.gameSwitchNotification);
-
     }
 
     private static final String AGENCY_EMAIL = "matveicharniauski@gmail.com";
@@ -149,44 +171,59 @@ public class SettingsFragment extends Fragment {
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // startActivityForResult устарел, но оставлю, чтобы минимально менять код
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
-    private void loadProfileImage() {
+    private void loadProfileImageSafely() {
+        if (playerSettingsRepository == null) {
+            Log.w(TAG, "playerSettingsRepository is null — cannot load profile image");
+            if (picture != null) picture.setImageResource(R.drawable.default_profile);
+            return;
+        }
+
         int userId = playerSettingsRepository.getCurrentUserId();
         PlayerSettingsModel player = playerSettingsRepository.getUserData(userId);
 
+        if (picture == null) {
+            Log.w(TAG, "picture ImageView is null — skipping loadProfileImage");
+            return;
+        }
+
         if (player != null && player.getProfileImage() != null) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(player.getProfileImage(), 0, player.getProfileImage().length);
-            picture.setImageBitmap(bitmap);
+            try {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(player.getProfileImage(), 0, player.getProfileImage().length);
+                picture.setImageBitmap(bitmap);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to decode profile image: " + e.getMessage());
+                picture.setImageResource(R.drawable.default_profile);
+            }
         } else {
             picture.setImageResource(R.drawable.default_profile);
         }
     }
 
-
-
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             Uri imageUri = data.getData();
 
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
 
                 int width = bitmap.getWidth();
                 int height = bitmap.getHeight();
 
-                int img_min=Math.min(width,height);
+                int img_min = Math.min(width, height);
                 Bitmap resizedBitmap = cropAndResizeBitmap(bitmap, img_min, img_min);
 
-                saveImageToDatabase(resizedBitmap,img_min);
+                saveImageToDatabase(resizedBitmap, img_min);
 
-                picture.setImageBitmap(resizedBitmap);
+                if (picture != null) picture.setImageBitmap(resizedBitmap);
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Failed to get bitmap from gallery: " + e.getMessage());
             }
         }
     }
@@ -207,27 +244,32 @@ public class SettingsFragment extends Fragment {
     }
 
     private void saveImageToDatabase(Bitmap bitmap, int size_img) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        if(size_img>512){
-            int compression= (int) (1000/size_img)*5;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // API 30+
-                bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, compression, byteArrayOutputStream);
+            if (size_img > 512) {
+                int compression = Math.max(10, (int) (1000 / (float) size_img) * 5); // безопасный диапазон
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // API 30+
+                    bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, compression, byteArrayOutputStream);
+                } else {
+                    bitmap.compress(Bitmap.CompressFormat.WEBP, compression, byteArrayOutputStream);
+                }
+            } else {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             }
-            else {
-                bitmap.compress(Bitmap.CompressFormat.WEBP, compression, byteArrayOutputStream); // Поддерживается с API 17
+
+            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+
+            if (playerSettingsRepository != null) {
+                int userId = playerSettingsRepository.getCurrentUserId();
+                ContentValues values = new ContentValues();
+                values.put("profileImage", imageBytes);
+                playerSettingsRepository.updateUserData(userId, values);
+            } else {
+                Log.w(TAG, "playerSettingsRepository is null — cannot save profile image");
             }
+        } catch (Exception e) {
+            Log.e(TAG, "saveImageToDatabase error: " + e.getMessage());
         }
-        else{bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);}
-
-        byte[] imageBytes = byteArrayOutputStream.toByteArray();
-
-        int userId = playerSettingsRepository.getCurrentUserId();
-        ContentValues values = new ContentValues();
-        values.put("profileImage", imageBytes);
-
-        playerSettingsRepository.updateUserData(userId, values);
-
     }
 }
-

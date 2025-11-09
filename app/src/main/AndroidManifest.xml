@@ -19,6 +19,9 @@
         android:theme="@style/Theme.Wordquarium"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.GameChainActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.GameWordlyActivity"
             android:exported="false" />
         <activity
