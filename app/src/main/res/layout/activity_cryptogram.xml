@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/crypt_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/crypt_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Криптограмма"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:paddingBottom="8dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCryptogram"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"/>
+
+    <!-- Подсказка / сост. клавиш -->
+    <TextView
+        android:id="@+id/crypt_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Нажми букву на клавиатуре чтобы открыть её"
+        android:padding="6dp"/>
+
+    <!-- Используем ту же RecyclerView клавиатуры, что и в игре -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnResetCrypt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Новая фраза / Сброс" />
+
+</LinearLayout>
