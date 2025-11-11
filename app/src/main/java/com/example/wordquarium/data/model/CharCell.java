@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Модель ячейки криптограммы.
- * Используем Lombok (@Data, @AllArgsConstructor) как ты просил.
  */
 @Data
 @AllArgsConstructor
@@ -38,5 +37,12 @@ public class CharCell {
         } else {
             this.status = revealedInitially ? CellStatus.CORRECT : CellStatus.HIDDEN;
         }
+    }
+
+    /**
+     * Проверка, раскрыта ли буква.
+     */
+    public boolean isRevealed() {
+        return this.status == CellStatus.CORRECT;
     }
 }

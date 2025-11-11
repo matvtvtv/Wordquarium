@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/light_background">
 
     <!-- Сетка для ввода букв: 6 строк x 5 столбцов -->
 
@@ -12,11 +13,9 @@
         android:id="@+id/constraintLayout"
         android:layout_width="411dp"
         android:layout_height="60dp"
-        app:layout_constraintBottom_toTopOf="@+id/keyboard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.04000002">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/levelGameText"

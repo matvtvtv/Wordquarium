@@ -46,7 +46,6 @@ public class CryptogramActivity extends AppCompatActivity {
     private List<CharCell> cells;
 
     private int errors = 0;
-    private int success = 0;
 
     private final List<Keyboard.Key> keyList = java.util.Arrays.asList(
             new Keyboard.Key("Й"), new Keyboard.Key("Ц"), new Keyboard.Key("У"), new Keyboard.Key("К"),
@@ -61,15 +60,13 @@ public class CryptogramActivity extends AppCompatActivity {
 
     private Keyboard keyboard;
 
-    // fallback phrase (на случай, если чтение файла не получилось)
     private String phrase = "Сидел петух на лавочке, считал свои булавочки, раз, два, три";
 
-    // mapping letter -> number
     private final HashMap<Character, Integer> mapLetterToNumber = new HashMap<>();
     private final HashSet<Integer> usedNumbers = new HashSet<>();
 
     private final Random rnd = new Random(System.currentTimeMillis());
-    private final int REVEAL_LETTERS_COUNT = 6;
+    private int REVEAL_LETTERS_COUNT = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,11 +80,11 @@ public class CryptogramActivity extends AppCompatActivity {
         String fromAssets = getRandomPhraseFromAssets("Cryptogram.txt");
         if (fromAssets != null && !fromAssets.trim().isEmpty()) {
             phrase = fromAssets.trim();
-        } // иначе остаётся fallback
+        }
+        REVEAL_LETTERS_COUNT = getIntent().getIntExtra("DIFF", 1);
 
         setupGame();
 
-        // Обновляем счетчик ошибок на экране
         errorsText.setText("Количество ошибок: " + errors + "/5");
 
         btnExit.setOnClickListener(v -> {
@@ -95,14 +92,9 @@ public class CryptogramActivity extends AppCompatActivity {
             finish();
         });
 
-        // Подсказка уже проинициализирована в getAllId()
         tvHint.setText("Нажми на квадрат с буквой → он выделится → нажми букву на клавиатуре");
     }
 
-    /**
-     * Читает все непустые строки из assets и выбирает одну случайную.
-     * Возвращает null в случае ошибки / если файл пуст.
-     */
     private String getRandomPhraseFromAssets(String filename) {
         List<String> lines = readLinesFromAssets(filename);
         if (lines == null || lines.isEmpty()) return null;
@@ -110,22 +102,17 @@ public class CryptogramActivity extends AppCompatActivity {
         return lines.get(0);
     }
 
-    /**
-     * Читает все непустые строки из assets/<filename> в кодировке UTF-8.
-     */
     private List<String> readLinesFromAssets(String filename) {
         List<String> list = new ArrayList<>();
         try (InputStream is = getAssets().open(filename);
              BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (line == null) continue;
                 line = line.trim();
                 if (!line.isEmpty()) list.add(line);
             }
         } catch (IOException e) {
             e.printStackTrace();
-            // Логируем и возвращаем пустой список
             return new ArrayList<>();
         }
         return list;
@@ -139,11 +126,9 @@ public class CryptogramActivity extends AppCompatActivity {
         rvCrypt.setLayoutManager(new GridLayoutManager(this, columns));
 
         adapter = new CryptogramAdapter(this, cells);
-        // Вешаем обработчик выбора клетки: адаптер сам хранит selectedIndex
         adapter.setOnCellClickListener(position -> adapter.setSelectedIndex(position));
         rvCrypt.setAdapter(adapter);
 
-        // Используем binding для клавиатуры view
         keyboard = new Keyboard(binding.keyboard, keyList);
         keyboard.setOnKeyClickListener(v -> {
             String keyText = ((android.widget.Button) v).getText().toString();
@@ -233,20 +218,16 @@ public class CryptogramActivity extends AppCompatActivity {
             }
         }
 
-        // объект клавиши, чтобы менять её статус
         Keyboard.Key kKey = keyboard.findByKeyText(String.valueOf(pressed));
 
         if (attempt == real) {
-            // правильная — раскрываем ТОЛЬКО выбранную ячейку
             adapter.revealAtPosition(sel);
-            success++;
-
             if (kKey != null) {
                 kKey.setStatus(LetterStatus.GREEN);
                 keyboard.notifyKeyChanged(kKey);
             }
+            checkWin();
         } else {
-            // неверная попытка — показываем введённую букву в клетке как WRONG
             adapter.markCellWrongWithAttempt(sel, attempt);
             errors++;
             errorsText.setText("Количество ошибок: " + errors + "/5");
@@ -254,11 +235,17 @@ public class CryptogramActivity extends AppCompatActivity {
                 showEndDialog(false);
             }
             if (kKey != null) {
-                if (presentAnywhere) kKey.setStatus(LetterStatus.YELLOW);
-                else kKey.setStatus(LetterStatus.GRAY);
+                kKey.setStatus(presentAnywhere ? LetterStatus.YELLOW : LetterStatus.GRAY);
                 keyboard.notifyKeyChanged(kKey);
             }
         }
+    }
+
+    private void checkWin() {
+        for (CharCell c : cells) {
+            if (c.isLetter() && !c.isRevealed()) return;
+        }
+        showEndDialog(true);
     }
 
     private void showEndDialog(boolean playerWon) {
@@ -279,7 +266,10 @@ public class CryptogramActivity extends AppCompatActivity {
 
         if (popupGameText != null) popupGameText.setText(" ");
         if (popupGameWin != null) popupGameWin.setText(playerWon ? "Вы выиграли" : "Вы проиграли");
-        if (popupGame != null) popupGame.setText(success + " букв");
+
+        int totalLetters = 0;
+        for (CharCell c : cells) if (c.isLetter()) totalLetters++;
+        if (popupGame != null) popupGame.setText(totalLetters + " букв");
 
         btnRestart.setOnClickListener(v -> {
             dialog.dismiss();
@@ -301,9 +291,9 @@ public class CryptogramActivity extends AppCompatActivity {
         btnExit = binding.exitButton;
         rvCrypt = binding.rvCryptogram;
         tvHint = binding.cryptHint;
-        // проверка на null для раннего обнаружения ошибок в layout
+
         if (errorsText == null || rvCrypt == null) {
-            throw new IllegalStateException("Не найден необходимый view в activity_cryptogram.xml (errorsText или rvCryptogram)");
+            throw new IllegalStateException("Не найден необходимый view в activity_cryptogram.xml");
         }
     }
 }

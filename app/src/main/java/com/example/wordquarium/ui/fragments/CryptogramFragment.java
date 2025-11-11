@@ -23,8 +23,9 @@ public class CryptogramFragment extends Fragment {
 
 
     private FragmentCryptogramBinding binding;
-    private CardView cardBtn4;
-
+    private CardView btn_Eazy;
+    private CardView btn_Medium;
+    private CardView btn_Hard;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,11 +38,22 @@ public class CryptogramFragment extends Fragment {
 
         binding = FragmentCryptogramBinding.inflate(inflater, container, false);
         getAllId();
-        cardBtn4.setOnClickListener(v -> {
-
-            Intent intent = new Intent(getContext(), CryptogramActivity.class);
-            startActivity(intent);
+        btn_Eazy.setOnClickListener(v -> {
+            setDiff(8);
             requireActivity().finish();
+
+        });
+        btn_Medium.setOnClickListener(v -> {
+
+            setDiff(6);
+            requireActivity().finish();
+
+        });
+        btn_Hard.setOnClickListener(v -> {
+
+            setDiff(4);
+            requireActivity().finish();
+
         });
 
         return binding.getRoot(); // возвращаем корень
@@ -49,7 +61,9 @@ public class CryptogramFragment extends Fragment {
     }
 
     private void getAllId() {
-        cardBtn4 = binding.cardBtn4;
+        btn_Eazy=binding.cardBtn4;
+        btn_Medium=binding.cardBtn5;
+        btn_Hard=binding.cardBtn6;
 
     }
     @Override
@@ -57,4 +71,12 @@ public class CryptogramFragment extends Fragment {
         super.onDestroyView();
         binding = null; // освобождаем binding
     }
+    private void setDiff(int diff){
+
+        Intent intent = new Intent(getContext(), CryptogramActivity.class);
+        intent.putExtra("DIFF",diff);
+        startActivity(intent);
+
+    }
+
 }

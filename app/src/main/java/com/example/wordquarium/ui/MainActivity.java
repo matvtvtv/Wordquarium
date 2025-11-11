@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = preferences.edit();
             List<String> phrases = RoadOfTextFileReader.readFromAssets(this, "Cryptogram.txt");
             int added = repo.insertAllIfNotExists(phrases);
-            Toast.makeText(this, "Импортировано фраз: " + added, Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Импортировано фраз: " + added, Toast.LENGTH_LONG).show();
             editor.putBoolean("isFirstRun", false);
             editor.apply();
         }

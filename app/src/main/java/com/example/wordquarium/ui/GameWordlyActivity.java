@@ -425,6 +425,9 @@ public class GameWordlyActivity extends AppCompatActivity {
             else{
                 finish();
                 Intent intent = new Intent(this, GameWordlyActivity.class);
+                intent.putExtra("WORD_LENGTH", wordLength); // Передаем значение
+                intent.putExtra("GAME_MODE", game_mode);
+
                 startActivity(intent);
             }
 
