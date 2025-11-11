@@ -59,6 +59,7 @@ public class GameChainActivity extends AppCompatActivity {
     private EditText inputField;
     private Button btnCheck;
     private Button btnSkip;
+    private TextView NumberText;
 
     private WordsRepository wordsRepository;
     private PlayerSettingsRepository playerSettingsRepository;
@@ -115,7 +116,7 @@ public class GameChainActivity extends AppCompatActivity {
 
         // Инициализация view из binding
         getAllId();
-
+        NumberText.setText("0");
         gamemode= getIntent().getBooleanExtra("GAMEMOD", false);
         time= getIntent().getIntExtra("TIME", 50);
 
@@ -219,6 +220,7 @@ public class GameChainActivity extends AppCompatActivity {
     }
 
     private void onPlayerSubmit() {
+        getAllId();
         String playerWord = inputField.getText().toString().trim().toUpperCase();
         if (playerWord.isEmpty()) {
             Toast.makeText(this, "Введите слово", Toast.LENGTH_SHORT).show();
@@ -260,6 +262,7 @@ public class GameChainActivity extends AppCompatActivity {
         String appWord = response.getWord().toUpperCase();
         usedWords.add(appWord);
         Number++;
+        NumberText.setText(String.valueOf(Number));
         WordView3 = WordView2;
         WordView2 = playerWord;
         logic.setAppWord(appWord);
@@ -344,6 +347,8 @@ public class GameChainActivity extends AppCompatActivity {
         btnCheck = binding.btnCheck;
         btnSkip = binding.btnSkip;
         btnExit = binding.exitButton;
+        NumberText = binding.numberText;
+
     }
 
     public void vibrateDevice(Context context, long milliseconds) {

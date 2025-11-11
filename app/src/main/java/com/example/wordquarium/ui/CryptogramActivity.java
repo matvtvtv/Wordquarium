@@ -1,17 +1,27 @@
 package com.example.wordquarium.ui;
 
+import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.wordquarium.R;
 import com.example.wordquarium.data.model.CharCell;
+import com.example.wordquarium.databinding.ActivityCryptogramBinding;
 import com.example.wordquarium.logic.adapters.CryptogramAdapter;
 import com.example.wordquarium.logic.adapters.Keyboard;
 import com.example.wordquarium.logic.adapters.LetterStatus;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,13 +30,18 @@ import java.util.List;
 import java.util.Random;
 
 public class CryptogramActivity extends AppCompatActivity {
+    private ActivityCryptogramBinding binding;
 
     private RecyclerView rvCrypt;
     private TextView tvHint;
-    private Button btnReset;
+    private TextView errorsText;
 
+    private ImageView btnExit;
     private CryptogramAdapter adapter;
     private List<CharCell> cells;
+
+    private int errors = 0;
+    private int success = 0;
 
     private final List<Keyboard.Key> keyList = java.util.Arrays.asList(
             new Keyboard.Key("Й"), new Keyboard.Key("Ц"), new Keyboard.Key("У"), new Keyboard.Key("К"),
@@ -42,26 +57,33 @@ public class CryptogramActivity extends AppCompatActivity {
     private Keyboard keyboard;
 
     // фразу можно менять
-    private String phrase = "Шла Саша по шоссе";
+    private String phrase = "Сидел петух на лавочке, считал свои булавочки, раз, два, три";
 
     // mapping letter -> number
     private final HashMap<Character, Integer> mapLetterToNumber = new HashMap<>();
     private final HashSet<Integer> usedNumbers = new HashSet<>();
 
     private final Random rnd = new Random(System.currentTimeMillis());
-    private final int REVEAL_LETTERS_COUNT = 3;
+    private final int REVEAL_LETTERS_COUNT = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cryptogram);
+        binding = ActivityCryptogramBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        rvCrypt = findViewById(R.id.rvCryptogram);
-        tvHint = findViewById(R.id.crypt_hint);
-        btnReset = findViewById(R.id.btnResetCrypt);
-
+        getAllId();
         setupGame();
 
+        // Обновляем счетчик ошибок на экране
+        errorsText.setText("Количество ошибок: " + errors + "/5");
+
+        btnExit.setOnClickListener(v -> {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
+
+        // Подсказка уже проинициализирована в getAllId()
         tvHint.setText("Нажми на квадрат с буквой → он выделится → нажми букву на клавиатуре");
     }
 
@@ -73,39 +95,23 @@ public class CryptogramActivity extends AppCompatActivity {
         rvCrypt.setLayoutManager(new GridLayoutManager(this, columns));
 
         adapter = new CryptogramAdapter(this, cells);
-        adapter.setOnCellClickListener(position -> {
-            // оставляем логику выбора в адаптере — activity ничего больше не делает
-        });
+        // Вешаем обработчик выбора клетки: адаптер сам хранит selectedIndex
+        adapter.setOnCellClickListener(position -> adapter.setSelectedIndex(position));
         rvCrypt.setAdapter(adapter);
 
-        keyboard = new Keyboard(findViewById(R.id.keyboard), keyList);
+        // Используем binding для клавиатуры view
+        keyboard = new Keyboard(binding.keyboard, keyList);
         keyboard.setOnKeyClickListener(v -> {
             String keyText = ((android.widget.Button) v).getText().toString();
-            if ("Del".equals(keyText)) {
+            if ("Del".equalsIgnoreCase(keyText)) {
                 adapter.setSelectedIndex(-1);
                 return;
             }
             handleKeyPress(keyText);
         });
-        keyboard.create(this, findViewById(android.R.id.content));
+        keyboard.create(this, binding.getRoot());
 
-        btnReset.setOnClickListener(v -> {
-            mapLetterToNumber.clear();
-            usedNumbers.clear();
-            prepareMappingForPhrase(phrase);
-            buildCellsForPhrase(phrase);
 
-            adapter = new CryptogramAdapter(this, cells);
-            adapter.setOnCellClickListener(position -> adapter.setSelectedIndex(position));
-            rvCrypt.setAdapter(adapter);
-
-            for (Keyboard.Key k : keyList) k.setStatus(LetterStatus.UNDEFINED);
-            if (keyboard.getKeyboardAdapter() != null) {
-                keyboard.getKeyboardAdapter().notifyDataSetChanged();
-            }
-
-            Toast.makeText(this, "Сброшено", Toast.LENGTH_SHORT).show();
-        });
     }
 
     private void prepareMappingForPhrase(String phrase) {
@@ -190,7 +196,9 @@ public class CryptogramActivity extends AppCompatActivity {
 
         if (attempt == real) {
             // правильная — раскрываем ТОЛЬКО выбранную ячейку
+            // revealAtPosition должен обновить view через adapter.notifyItemChanged(...)
             adapter.revealAtPosition(sel);
+            success++;
 
             if (kKey != null) {
                 kKey.setStatus(LetterStatus.GREEN);
@@ -199,12 +207,59 @@ public class CryptogramActivity extends AppCompatActivity {
         } else {
             // неверная попытка — показываем введённую букву в клетке как WRONG
             adapter.markCellWrongWithAttempt(sel, attempt);
-
+            errors++;
+            errorsText.setText("Количество ошибок: " + errors + "/5");
+            if (errors >= 5) {
+                showEndDialog(false);
+            }
             if (kKey != null) {
                 if (presentAnywhere) kKey.setStatus(LetterStatus.YELLOW);
                 else kKey.setStatus(LetterStatus.GRAY);
                 keyboard.notifyKeyChanged(kKey);
             }
         }
+    }
+
+    private void showEndDialog(boolean playerWon) {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.popup_game_win);
+        dialog.setCancelable(true);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        TextView popupGameText = dialog.findViewById(R.id.textView9);
+        TextView popupGameWin = dialog.findViewById(R.id.popupGameWinText);
+        TextView popupGame = dialog.findViewById(R.id.resoult_win);
+
+        Button btnRestart = dialog.findViewById(R.id.btnRestart);
+        Button btnMainMenu = dialog.findViewById(R.id.btnMainMenu);
+
+        if (popupGameText != null) popupGameText.setText(" ");
+        if (popupGameWin != null) popupGameWin.setText(playerWon ? "Вы выиграли" : "Вы проиграли");
+        if (popupGame != null) popupGame.setText(success + " букв");
+
+        btnRestart.setOnClickListener(v -> {
+            dialog.dismiss();
+            finish();
+            startActivity(new Intent(this, CryptogramActivity.class));
+        });
+
+        btnMainMenu.setOnClickListener(v -> {
+            dialog.dismiss();
+            finish();
+            startActivity(new Intent(this, MainActivity.class));
+        });
+
+        dialog.show();
+    }
+
+    private void getAllId() {
+        errorsText = binding.levelGameText;
+        btnExit = binding.exitButton;
+        rvCrypt = binding.rvCryptogram;
+        tvHint = binding.cryptHint;
+
     }
 }

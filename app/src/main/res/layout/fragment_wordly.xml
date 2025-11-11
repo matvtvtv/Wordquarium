@@ -118,29 +118,29 @@
                     android:textStyle="bold" />
 
             </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:clickable="true"
-                app:cardBackgroundColor="#CB98EF"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                app:cardCornerRadius="20dp"
-                app:cardUseCompatPadding="true">
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:clickable="true"-->
+<!--                app:cardBackgroundColor="#CB98EF"-->
+<!--                android:layout_marginRight="10dp"-->
+<!--                android:layout_marginLeft="10dp"-->
+<!--                app:cardCornerRadius="20dp"-->
+<!--                app:cardUseCompatPadding="true">-->
 
-                <TextView
-                    android:id="@+id/on_speed"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:alpha="0.6"
-                    android:gravity="center"
-                    android:padding="0dp"
-                    android:text="Отгадать на скорость"
-                    android:textColor="@color/black"
-                    android:textSize="25dp"
-                    android:textStyle="bold" />
+<!--                <TextView-->
+<!--                    android:id="@+id/on_speed"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:alpha="0.6"-->
+<!--                    android:gravity="center"-->
+<!--                    android:padding="0dp"-->
+<!--                    android:text="Отгадать на скорость"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="25dp"-->
+<!--                    android:textStyle="bold" />-->
 
-            </androidx.cardview.widget.CardView>
+<!--            </androidx.cardview.widget.CardView>-->
             <androidx.cardview.widget.CardView
                 android:id="@+id/mainCard"
                 android:layout_width="match_parent"

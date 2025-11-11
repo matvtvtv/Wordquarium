@@ -51,7 +51,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_USER_NOTIFICATION = "notification";
 
 
-
+    public static final String ROAD_TEXT_TABLE="road_text_table";
+    public static final String COLUMN_ROAD_TEXT = "road_text";
+    public static final String COLUMN_ROAD_TEXT_ID = "road_text_id";
 
 
 
@@ -89,7 +91,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_USER_PICTURE + " BLOB ,"+
             COLUMN_USER_NOTIFICATION + " INTEGER )";
 
-
+    private static final String CREATE_ROAD_TEXT_TABLE = "CREATE TABLE " +  ROAD_TEXT_TABLE+ " ( " +
+            COLUMN_ROAD_TEXT + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            COLUMN_ROAD_TEXT_ID + " TEXT) ";
     private DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
 
@@ -107,6 +111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_WORDS);
         db.execSQL(CREATE_USER_TABLE);
         db.execSQL(CREATE_USER_SETTINGS_TABLE);
+        db.execSQL(CREATE_ROAD_TEXT_TABLE);
     }
 
     @Override
@@ -114,6 +119,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + WORD_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + USER_SETTINGS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + ROAD_TEXT_TABLE);
         onCreate(db);
     }
 }

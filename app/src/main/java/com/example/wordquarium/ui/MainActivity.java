@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         // Восстановление последнего слайда
         int lastSlide = preferences.getInt("lastSlide", 1); // по умолчанию 1
         viewPager.setCurrentItem(lastSlide, false);
+        bottomNavigationView.getMenu().getItem(lastSlide).setChecked(true);
 
         // Сохраняем текущий слайд при смене
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
