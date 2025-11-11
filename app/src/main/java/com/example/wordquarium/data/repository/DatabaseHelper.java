@@ -51,9 +51,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_USER_NOTIFICATION = "notification";
 
 
-    public static final String ROAD_TEXT_TABLE="road_text_table";
-    public static final String COLUMN_ROAD_TEXT = "road_text";
-    public static final String COLUMN_ROAD_TEXT_ID = "road_text_id";
+    public static final String ROAD_TEXT_TABLE = "road_text_table";
+    public static final String COLUMN_ROAD_TEXT_ID = "road_text_id"; // PK
+    public static final String COLUMN_ROAD_TEXT = "road_text";       // TEXT
+
 
 
 
@@ -91,9 +92,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_USER_PICTURE + " BLOB ,"+
             COLUMN_USER_NOTIFICATION + " INTEGER )";
 
-    private static final String CREATE_ROAD_TEXT_TABLE = "CREATE TABLE " +  ROAD_TEXT_TABLE+ " ( " +
-            COLUMN_ROAD_TEXT + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COLUMN_ROAD_TEXT_ID + " TEXT) ";
+    private static final String CREATE_ROAD_TEXT_TABLE = "CREATE TABLE " + ROAD_TEXT_TABLE + " ( " +
+            COLUMN_ROAD_TEXT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            COLUMN_ROAD_TEXT + " TEXT )";
     private DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
 

@@ -16,6 +16,8 @@ import com.example.wordquarium.R;
 import com.example.wordquarium.data.model.PlayerModel;
 import com.example.wordquarium.data.repository.DatabaseHelper;
 import com.example.wordquarium.data.repository.PlayerRepository;
+import com.example.wordquarium.data.repository.RoadOfTextFileReader;
+import com.example.wordquarium.data.repository.RoadOfTextRepository;
 import com.example.wordquarium.data.repository.WordsRepository;
 import com.example.wordquarium.logic.adapters.ViewPagerAdapter;
 import com.example.wordquarium.logic.viewmodels.MainViewModel;
@@ -23,7 +25,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.List;
 import java.util.Objects;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -60,10 +64,14 @@ public class MainActivity extends AppCompatActivity {
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         WordsRepository wordsRepository = new WordsRepository(db);
+        RoadOfTextRepository repo = new RoadOfTextRepository(this);
 
         if (isFirstRun) {
             wordsRepository.importWordsFromFile(this);
             SharedPreferences.Editor editor = preferences.edit();
+            List<String> phrases = RoadOfTextFileReader.readFromAssets(this, "Cryptogram.txt");
+            int added = repo.insertAllIfNotExists(phrases);
+            Toast.makeText(this, "Импортировано фраз: " + added, Toast.LENGTH_LONG).show();
             editor.putBoolean("isFirstRun", false);
             editor.apply();
         }

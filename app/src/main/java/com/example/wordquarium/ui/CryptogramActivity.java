@@ -22,6 +22,11 @@ import com.example.wordquarium.logic.adapters.CryptogramAdapter;
 import com.example.wordquarium.logic.adapters.Keyboard;
 import com.example.wordquarium.logic.adapters.LetterStatus;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,7 +61,7 @@ public class CryptogramActivity extends AppCompatActivity {
 
     private Keyboard keyboard;
 
-    // фразу можно менять
+    // fallback phrase (на случай, если чтение файла не получилось)
     private String phrase = "Сидел петух на лавочке, считал свои булавочки, раз, два, три";
 
     // mapping letter -> number
@@ -73,6 +78,13 @@ public class CryptogramActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         getAllId();
+
+        // Попробуем получить случайную фразу из assets/Cryptogram.txt
+        String fromAssets = getRandomPhraseFromAssets("Cryptogram.txt");
+        if (fromAssets != null && !fromAssets.trim().isEmpty()) {
+            phrase = fromAssets.trim();
+        } // иначе остаётся fallback
+
         setupGame();
 
         // Обновляем счетчик ошибок на экране
@@ -87,11 +99,43 @@ public class CryptogramActivity extends AppCompatActivity {
         tvHint.setText("Нажми на квадрат с буквой → он выделится → нажми букву на клавиатуре");
     }
 
+    /**
+     * Читает все непустые строки из assets и выбирает одну случайную.
+     * Возвращает null в случае ошибки / если файл пуст.
+     */
+    private String getRandomPhraseFromAssets(String filename) {
+        List<String> lines = readLinesFromAssets(filename);
+        if (lines == null || lines.isEmpty()) return null;
+        Collections.shuffle(lines, rnd);
+        return lines.get(0);
+    }
+
+    /**
+     * Читает все непустые строки из assets/<filename> в кодировке UTF-8.
+     */
+    private List<String> readLinesFromAssets(String filename) {
+        List<String> list = new ArrayList<>();
+        try (InputStream is = getAssets().open(filename);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line == null) continue;
+                line = line.trim();
+                if (!line.isEmpty()) list.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Логируем и возвращаем пустой список
+            return new ArrayList<>();
+        }
+        return list;
+    }
+
     private void setupGame() {
         prepareMappingForPhrase(phrase);
         buildCellsForPhrase(phrase);
 
-        int columns = 8;
+        int columns = 10;
         rvCrypt.setLayoutManager(new GridLayoutManager(this, columns));
 
         adapter = new CryptogramAdapter(this, cells);
@@ -110,8 +154,6 @@ public class CryptogramActivity extends AppCompatActivity {
             handleKeyPress(keyText);
         });
         keyboard.create(this, binding.getRoot());
-
-
     }
 
     private void prepareMappingForPhrase(String phrase) {
@@ -196,7 +238,6 @@ public class CryptogramActivity extends AppCompatActivity {
 
         if (attempt == real) {
             // правильная — раскрываем ТОЛЬКО выбранную ячейку
-            // revealAtPosition должен обновить view через adapter.notifyItemChanged(...)
             adapter.revealAtPosition(sel);
             success++;
 
@@ -260,6 +301,9 @@ public class CryptogramActivity extends AppCompatActivity {
         btnExit = binding.exitButton;
         rvCrypt = binding.rvCryptogram;
         tvHint = binding.cryptHint;
-
+        // проверка на null для раннего обнаружения ошибок в layout
+        if (errorsText == null || rvCrypt == null) {
+            throw new IllegalStateException("Не найден необходимый view в activity_cryptogram.xml (errorsText или rvCryptogram)");
+        }
     }
 }
