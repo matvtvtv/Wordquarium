@@ -1,9 +1,9 @@
 package com.example.wordquarium.ui;
 
+import static android.view.Window.FEATURE_NO_TITLE;
 import static com.example.wordquarium.logic.adapters.LetterStatus.GRAY;
 
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,17 +12,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Window;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -39,16 +35,14 @@ import com.example.wordquarium.logic.adapters.Keyboard;
 import com.example.wordquarium.logic.adapters.LetterStatus;
 import com.example.wordquarium.ui.fragments.GameChainLogic;
 
-
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 public class GameChainActivity extends AppCompatActivity {
+
     private ActivityGameChainBinding binding;
 
     private TextView appWordView1;
@@ -60,27 +54,24 @@ public class GameChainActivity extends AppCompatActivity {
     private Button btnCheck;
     private Button btnSkip;
     private TextView NumberText;
+    private ImageView btnExit;
 
     private WordsRepository wordsRepository;
     private PlayerSettingsRepository playerSettingsRepository;
 
     private final Set<String> usedWords = new HashSet<>();
     private final Random rnd = new Random();
-
     private GameChainLogic logic;
 
     private String WordView1 = "...";
     private String WordView2 = "...";
     private String WordView3 = "...";
-    private int Number=0;
+    private int Number = 0;
 
-    private ImageView btnExit;
     private CountdownTimer countdownTimer;
     private boolean gamemode;
     private int time;
 
-
-    // клавиши (как у тебя были)
     private final List<Keyboard.Key> keyList = java.util.Arrays.asList(
             new Keyboard.Key("Й"), new Keyboard.Key("Ц"), new Keyboard.Key("У"), new Keyboard.Key("К"),
             new Keyboard.Key("Е"), new Keyboard.Key("Н"), new Keyboard.Key("Г"), new Keyboard.Key("Ш"),
@@ -93,7 +84,6 @@ public class GameChainActivity extends AppCompatActivity {
             new Keyboard.Key("Del", GRAY)
     );
 
-    // запомним текущую подсвеченную клавишу, чтобы убирать подсветку при обновлении
     private Keyboard.Key currentHighlightedKey = null;
 
     @Override
@@ -107,60 +97,55 @@ public class GameChainActivity extends AppCompatActivity {
         wordsRepository = new WordsRepository(db);
 
         PlayerRepository playerRepository = PlayerRepository.getInstance(getApplicationContext());
-        int userId = playerRepository.getCurrentUserId();
-        PlayerModel user = playerRepository.getUserData(userId);
+        PlayerModel user = playerRepository.getUserData(playerRepository.getCurrentUserId());
 
         playerSettingsRepository = PlayerSettingsRepository.getInstance(getApplicationContext());
-        int user_Id = playerSettingsRepository.getCurrentUserId();
-        PlayerSettingsModel user_Ac = playerSettingsRepository.getUserData(user_Id);
+        PlayerSettingsModel userSettings = playerSettingsRepository.getUserData(playerSettingsRepository.getCurrentUserId());
 
-        // Инициализация view из binding
         getAllId();
         NumberText.setText("0");
-        gamemode= getIntent().getBooleanExtra("GAMEMOD", false);
-        time= getIntent().getIntExtra("TIME", 50);
 
-        // Инициализация клавиатуры (используем binding.keyboard)
+        gamemode = getIntent().getBooleanExtra("GAMEMOD", false);
+        time = getIntent().getIntExtra("TIME", 50);
+
         Keyboard keyboard = new Keyboard(binding.keyboard, keyList);
         keyboard.setOnKeyClickListener(v -> {
-            // звук/вибрация
-            if (user_Ac != null && user_Ac.getSound() == 1) {
+            if (userSettings != null && userSettings.getSound() == 1) {
                 MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.keyboard_sound);
                 mediaPlayer.start();
             }
-            if (user_Ac != null && user_Ac.getVibration() == 1) {
+            if (userSettings != null && userSettings.getVibration() == 1) {
                 vibrateDevice(this, 80);
             }
 
-            // Обработка нажатой клавиши
-            Button btn = (Button) v;
-            String keyText = btn.getText().toString();
-
+            String keyText = ((Button) v).getText().toString();
             if ("Del".equals(keyText)) {
-                // удалить последний символ в EditText
                 String cur = inputField.getText().toString();
                 if (!cur.isEmpty()) {
                     inputField.setText(cur.substring(0, cur.length() - 1));
                     inputField.setSelection(inputField.getText().length());
                 }
             } else {
-                // добавить букву в EditText
                 inputField.append(keyText);
             }
         });
         keyboard.create(this, binding.getRoot());
+
         logic = new GameChainLogic();
-        if(time!=66){
-        countdownTimer = new CountdownTimer(textTimer, time);
-        countdownTimer.start();
-        }else{textTimer.setText("∞");}
-        // Запуск новой игры
+
+        if (time != 66) {
+            countdownTimer = new CountdownTimer(textTimer, time);
+            countdownTimer.start();
+        } else {
+            textTimer.setText("∞");
+        }
+
         startNewGame();
 
-        // слушатели кнопок
         btnCheck.setOnClickListener(v -> onPlayerSubmit());
         btnSkip.setOnClickListener(v -> onPlayerSkip());
         btnExit.setOnClickListener(v -> {
+            if (countdownTimer != null) countdownTimer.stop();
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
@@ -177,7 +162,6 @@ public class GameChainActivity extends AppCompatActivity {
         logic.startNewGame(startWord);
         usedWords.clear();
         usedWords.add(startWord);
-
         updateUIForAppWord(startWord);
     }
 
@@ -185,42 +169,27 @@ public class GameChainActivity extends AppCompatActivity {
         appWordView1.setText(word);
         appWordView2.setText(WordView2);
         appWordView3.setText(WordView3);
-        WordView3=WordView2;
-        WordView2=word;
+        WordView3 = WordView2;
+        WordView2 = word;
+
         char required = logic.getRequiredStartLetter();
         hintView.setText("Нужно слово на: " + required);
 
-        // сброс предыдущей подсветки
-        if (currentHighlightedKey != null) {
-            currentHighlightedKey.setStatus(LetterStatus.UNDEFINED);
-            if (binding.keyboard != null) {
-                Keyboard kb = new Keyboard(binding.keyboard, keyList);
+        if (currentHighlightedKey != null) currentHighlightedKey.setStatus(LetterStatus.UNDEFINED);
 
-            }
-        }
-
-        // Найти клавишу по тексту и подсветить её как GREEN
-        String requiredStr = String.valueOf(required);
         for (Keyboard.Key k : keyList) {
-            if (requiredStr.equalsIgnoreCase(k.getKeyText())) {
-                // сброс предыдущего
-                if (currentHighlightedKey != null && currentHighlightedKey != k) {
-                    currentHighlightedKey.setStatus(LetterStatus.UNDEFINED);
-                }
+            if (String.valueOf(required).equalsIgnoreCase(k.getKeyText())) {
                 k.setStatus(LetterStatus.GREEN);
                 currentHighlightedKey = k;
                 break;
             }
         }
 
-        // уведомляем адаптер об изменениях: удобней хранить keyboard как поле — сделаем это простым способом:
-        if (binding.keyboard != null && binding.keyboard.getAdapter() != null) {
+        if (binding.keyboard != null && binding.keyboard.getAdapter() != null)
             binding.keyboard.getAdapter().notifyDataSetChanged();
-        }
     }
 
     private void onPlayerSubmit() {
-        getAllId();
         String playerWord = inputField.getText().toString().trim().toUpperCase();
         if (playerWord.isEmpty()) {
             Toast.makeText(this, "Введите слово", Toast.LENGTH_SHORT).show();
@@ -254,6 +223,7 @@ public class GameChainActivity extends AppCompatActivity {
         }
 
         if (filtered.isEmpty()) {
+            if (countdownTimer != null) countdownTimer.stop();
             showEndDialog(true, "Приложение не нашло слово — вы победили!");
             return;
         }
@@ -261,24 +231,22 @@ public class GameChainActivity extends AppCompatActivity {
         WordsModel response = filtered.get(rnd.nextInt(filtered.size()));
         String appWord = response.getWord().toUpperCase();
         usedWords.add(appWord);
+
         Number++;
         NumberText.setText(String.valueOf(Number));
+
         WordView3 = WordView2;
         WordView2 = playerWord;
         logic.setAppWord(appWord);
         updateUIForAppWord(appWord);
-        if(time!=66){
-        if (gamemode) {
-            countdownTimer.reset(time);
-        }}
 
+        if (time != 66 && countdownTimer != null && gamemode) countdownTimer.reset(time);
 
         inputField.setText("");
     }
 
     private void onPlayerSkip() {
-
-        Toast.makeText(this, "Пропуск хода (можно реализовать штраф)", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Пропуск хода", Toast.LENGTH_SHORT).show();
 
         char last = logic.getRequiredStartLetter();
         List<WordsModel> candidates = wordsRepository.getWordsStartingWith(last);
@@ -287,10 +255,13 @@ public class GameChainActivity extends AppCompatActivity {
             String up = w.getWord().toUpperCase();
             if (!usedWords.contains(up)) filtered.add(w);
         }
+
         if (filtered.isEmpty()) {
+            if (countdownTimer != null) countdownTimer.stop();
             showEndDialog(true, "Никто не может найти слово — игра окончена");
             return;
         }
+
         WordsModel response = filtered.get(rnd.nextInt(filtered.size()));
         String appWord = response.getWord().toUpperCase();
         usedWords.add(appWord);
@@ -299,9 +270,10 @@ public class GameChainActivity extends AppCompatActivity {
     }
 
     private void showEndDialog(boolean playerWon, String message) {
-        countdownTimer.stop();
+        if (countdownTimer != null) countdownTimer.stop();
+
         Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.requestWindowFeature(FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.popup_game_win);
         dialog.setCancelable(true);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -309,33 +281,33 @@ public class GameChainActivity extends AppCompatActivity {
         TextView popupGameText = dialog.findViewById(R.id.textView9);
         TextView popupGameWin = dialog.findViewById(R.id.popupGameWinText);
         TextView popupGame = dialog.findViewById(R.id.resoult_win);
+        TextView popupGameDia = dialog.findViewById(R.id.tvGameWin);
 
         Button btnRestart = dialog.findViewById(R.id.btnRestart);
         Button btnMainMenu = dialog.findViewById(R.id.btnMainMenu);
 
-        // Безопасные установки текста (передаём строки, а не int)
         if (popupGameText != null) popupGameText.setText(" ");
         if (popupGameWin != null) popupGameWin.setText("Вы ответили на");
-        if (popupGame != null) popupGame.setText(String.valueOf(Number+1)+ " слов"); // ← важно: String, а не int
+        if (popupGame != null) popupGame.setText(String.valueOf(Number + 1) + " слов");
+        if (playerWon && popupGameDia != null) popupGameDia.setText("Вы победили");
 
         btnRestart.setOnClickListener(v -> {
-            // Перезапуск той же Activity
-            dialog.dismiss();
+            if (countdownTimer != null) countdownTimer.stop();
+            Intent intent = new Intent(this, GameChainActivity.class);
+            intent.putExtra("TIME", time);
+            intent.putExtra("GAMEMOD", gamemode);
             finish();
-            startActivity(new Intent(this, GameChainActivity.class));
+            startActivity(intent);
         });
 
         btnMainMenu.setOnClickListener(v -> {
-            dialog.dismiss();
+            if (countdownTimer != null) countdownTimer.stop();
             finish();
             startActivity(new Intent(this, MainActivity.class));
         });
 
-
-        // Показать диалог один раз
         dialog.show();
     }
-
 
     private void getAllId() {
         appWordView1 = binding.appWord1;
@@ -348,7 +320,6 @@ public class GameChainActivity extends AppCompatActivity {
         btnSkip = binding.btnSkip;
         btnExit = binding.exitButton;
         NumberText = binding.numberText;
-
     }
 
     public void vibrateDevice(Context context, long milliseconds) {
@@ -361,14 +332,12 @@ public class GameChainActivity extends AppCompatActivity {
             }
         }
     }
+
     public class CountdownTimer {
-
-        private Handler handler = new Handler(Looper.getMainLooper());
+        private final Handler handler = new Handler(Looper.getMainLooper());
         private Runnable runnable;
-
         private int remainingSeconds;
         private boolean running = false;
-
         private final TextView timerView;
 
         public CountdownTimer(TextView timerView, int startSeconds) {
@@ -386,21 +355,17 @@ public class GameChainActivity extends AppCompatActivity {
         public void start() {
             if (running) return;
             running = true;
-
             runnable = new Runnable() {
                 @Override
                 public void run() {
                     if (!running) return;
-
                     if (remainingSeconds > 0) {
                         remainingSeconds--;
                         updateText();
                         handler.postDelayed(this, 1000);
                     } else {
                         running = false;
-                        if (!isFinishing()) {
-                            showEndDialog(false, "Время вышло");
-                        }
+                        if (!isFinishing()) showEndDialog(false, "Время вышло");
                     }
                 }
             };
@@ -409,9 +374,7 @@ public class GameChainActivity extends AppCompatActivity {
 
         public void stop() {
             running = false;
-            if (runnable != null) {
-                handler.removeCallbacks(runnable);
-            }
+            if (runnable != null) handler.removeCallbacks(runnable);
         }
 
         public void reset(int newSeconds) {
@@ -430,7 +393,6 @@ public class GameChainActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -438,5 +400,4 @@ public class GameChainActivity extends AppCompatActivity {
             countdownTimer.stop();
         }
     }
-
 }
