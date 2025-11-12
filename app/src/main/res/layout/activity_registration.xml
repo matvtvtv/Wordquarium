@@ -31,16 +31,43 @@
         android:id="@+id/registation_card"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-
+        app:cardCornerRadius="20dp"
         app:cardBackgroundColor="@color/light_green"
-        />
+        android:layout_marginTop="20dp"
+        >
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Зарегестрироваться"
+            android:layout_gravity="center"
+            android:alpha="0.6"
+            android:textSize="20dp"
+            />
+    </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/entarance_card"
+        app:cardCornerRadius="20dp"
+        android:layout_marginTop="20dp"
 
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        app:cardBackgroundColor="@color/light_yellow"/>
+        app:cardBackgroundColor="@color/light_yellow">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Вход"
+            android:alpha="0.6"
+
+            android:textSize="20dp"
+
+            android:layout_gravity="center"
+            />
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/textViewMessage"

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +19,7 @@ import com.example.wordquarium.R;
 import com.example.wordquarium.data.model.PlayerModel;
 import com.example.wordquarium.data.repository.PlayerRepository;
 import com.example.wordquarium.ui.GameWordlyActivity;
+import com.example.wordquarium.ui.MultiUserActivity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,17 +30,15 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class WordlyFragment extends Fragment {
 
-
     private CardView word_day;
     private CardView travel_button;
     private CardView letter_4_free;
     private CardView letter_5_free;
     private CardView letter_6_free;
     private CardView letter_7_free;
-    private TextView level;
-    private TextView moneyText;
-
+    private ProgressBar level;
     private CardView multiUser;
+
 
     private int GAME_MODE = 2;
     private int WORD_LENGTH = 0;
@@ -53,8 +53,7 @@ public class WordlyFragment extends Fragment {
         int userId = playerRepository.getCurrentUserId();
         PlayerModel user = playerRepository.getUserData(userId);
 
-
-
+        level.setProgress((user.getLevel()%5)*10,true);
         word_day.setOnClickListener(v -> {
             ContentValues values = new ContentValues();
             LocalDateTime now = LocalDateTime.now();
@@ -74,17 +73,12 @@ public class WordlyFragment extends Fragment {
             } else {
                 Toast.makeText(getContext(), "Вы уже играли слово дня", Toast.LENGTH_SHORT).show();
             }
-
         });
 
         travel_button.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), GameWordlyActivity.class);
-
-
             GAME_MODE = 2;
             intent.putExtra("GAME_MODE", GAME_MODE);
-
-
             requireActivity().finish();
             startActivity(intent);
         });
@@ -92,7 +86,7 @@ public class WordlyFragment extends Fragment {
         letter_4_free.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), GameWordlyActivity.class);
             WORD_LENGTH = 4;
-            intent.putExtra("WORD_LENGTH", WORD_LENGTH); // Передаем значение
+            intent.putExtra("WORD_LENGTH", WORD_LENGTH);
             GAME_MODE = 3;
             intent.putExtra("GAME_MODE", GAME_MODE);
             requireActivity().finish();
@@ -100,10 +94,9 @@ public class WordlyFragment extends Fragment {
         });
 
         letter_5_free.setOnClickListener(v -> {
-
             Intent intent = new Intent(getContext(), GameWordlyActivity.class);
             WORD_LENGTH = 5;
-            intent.putExtra("WORD_LENGTH", WORD_LENGTH); // Передаем значение
+            intent.putExtra("WORD_LENGTH", WORD_LENGTH);
             GAME_MODE = 3;
             intent.putExtra("GAME_MODE", GAME_MODE);
             requireActivity().finish();
@@ -113,7 +106,7 @@ public class WordlyFragment extends Fragment {
         letter_6_free.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), GameWordlyActivity.class);
             WORD_LENGTH = 6;
-            intent.putExtra("WORD_LENGTH", WORD_LENGTH); // Передаем значение
+            intent.putExtra("WORD_LENGTH", WORD_LENGTH);
             GAME_MODE = 3;
             intent.putExtra("GAME_MODE", GAME_MODE);
             requireActivity().finish();
@@ -123,24 +116,17 @@ public class WordlyFragment extends Fragment {
         letter_7_free.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), GameWordlyActivity.class);
             WORD_LENGTH = 7;
-            intent.putExtra("WORD_LENGTH", WORD_LENGTH); // Передаем значение
+            intent.putExtra("WORD_LENGTH", WORD_LENGTH);
             GAME_MODE = 3;
             intent.putExtra("GAME_MODE", GAME_MODE);
             requireActivity().finish();
             startActivity(intent);
         });
 
-//        multiUser.setOnClickListener(v -> {
-//
-//            MultiUserList bestFragment = new MultiUserList();
-//
-//            requireActivity().getSupportFragmentManager()
-//                    .beginTransaction()
-//                    .replace(R.id.lay_main, bestFragment)
-//                    .addToBackStack(null)
-//                    .commit();
-//        });
+        multiUser.setOnClickListener(v -> {
 
+            startActivity(new Intent(requireContext(), MultiUserActivity.class));
+        });
 
         return view;
     }
@@ -153,6 +139,6 @@ public class WordlyFragment extends Fragment {
         letter_7_free = view.findViewById(R.id.cardBtn7);
         word_day = view.findViewById(R.id.word_of_day);
         multiUser = view.findViewById(R.id.multi_user);
+        level= view.findViewById(R.id.progressBar);
     }
-
 }
