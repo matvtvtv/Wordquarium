@@ -115,15 +115,15 @@ public class SettingsFragment extends Fragment {
         }
 
         // Исправленная строка: notification переключатель должен смотреть на поле notification
-        if (mySwitchNotification != null && user != null) {
-            mySwitchNotification.setChecked(user.getNotification() == 1);
-            mySwitchNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                int newNotificationValue = isChecked ? 1 : 0;
-                ContentValues values = new ContentValues();
-                values.put("notification", newNotificationValue);
-                playerSettingsRepository.updateUserData(user_Id, values);
-            });
-        }
+//        if (mySwitchNotification != null && user != null) {
+//            mySwitchNotification.setChecked(user.getNotification() == 1);
+//            mySwitchNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//                int newNotificationValue = isChecked ? 1 : 0;
+//                ContentValues values = new ContentValues();
+//                values.put("notification", newNotificationValue);
+//                playerSettingsRepository.updateUserData(user_Id, values);
+//            });
+//        }
 
         // bug report
         if (bugRep != null) {
@@ -156,7 +156,7 @@ public class SettingsFragment extends Fragment {
         login = view.findViewById(R.id.yourLogin);
         mySwitchSound = view.findViewById(R.id.gameSwitchSound);
         mySwitchVibration = view.findViewById(R.id.gameSwitchVibration);
-        mySwitchNotification = view.findViewById(R.id.gameSwitchNotification);
+        //mySwitchNotification = view.findViewById(R.id.gameSwitchNotification);
     }
 
     private static final String AGENCY_EMAIL = "matveicharniauski@gmail.com";

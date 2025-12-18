@@ -12,9 +12,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher_foreground"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_launcher_foreground"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wordquarium"
         android:usesCleartextTraffic="true">
@@ -22,12 +22,7 @@
             android:name=".ui.MultiUserActivity"
             android:exported="false"
             android:theme="@style/Theme.Wordquarium" />
-        <activity
-            android:name=".ui.MainActi"
-            android:exported="false" />
-        <activity
-            android:name=".ui.MultiUserNewWordForFriend"
-            android:exported="false" />
+
         <activity
             android:name=".ui.CryptogramActivity"
             android:exported="false" />

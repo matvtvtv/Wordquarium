@@ -62,6 +62,8 @@ public class MultiUserList extends Fragment {
                     .commit();
         });
         exit_m.setOnClickListener(v->{
+            Intent intent = new Intent(requireContext(), MainActivity.class);
+            startActivity(intent);
 
         });
         // Получаем список загаданных слов от API

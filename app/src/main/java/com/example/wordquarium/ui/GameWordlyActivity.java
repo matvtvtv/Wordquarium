@@ -281,121 +281,128 @@ public class GameWordlyActivity extends AppCompatActivity {
         });
 
     }
-    private void playerWin(){
+    private void playerWin() {
 
         PlayerRepository playerRepository = PlayerRepository.getInstance(getApplicationContext());
         int userId = playerRepository.getCurrentUserId();
         PlayerModel user = playerRepository.getUserData(userId);
-        if(game_mode==2) {
+
+        // Повышение уровня для Wordly
+        if (game_mode == 2) {
             user.setLevel(user.getLevel() + 1);
         }
-        switch (game_mode){
-            case 1:user.setMoney(user.getMoney() + 20);break;
-            case 2:user.setMoney(user.getMoney() + 10);break;
-            case 3:user.setMoney(user.getMoney() + 5);break;
-            case 4:user.setMoney(user.getMoney() + 5);break;
+
+        // Награда за победу
+        switch (game_mode) {
+            case 1:
+                user.setMoney(user.getMoney() + 20);
+                break;
+            case 2:
+                user.setMoney(user.getMoney() + 10);
+                break;
+            case 3:
+            case 4:
+                user.setMoney(user.getMoney() + 5);
+                break;
         }
-        user.setAllGames(user.getAllGames() + 1);
-        user.setGamesWin(user.getGamesWin() + 1);
-        user.setCurrentSeriesWins(user.getCurrentSeriesWins()+1);
+
+        // Wordly статистика
+        if (game_mode == 2) {
+            user.setGamesWinWordly(user.getGamesWinWordly() + 1);
+            user.setCurrentSeriesWinsWordly(user.getCurrentSeriesWinsWordly() + 1);
+
+            // обновляем рекорд серии
+            if (user.getCurrentSeriesWinsWordly() > user.getMaxSeriesWinsWordly()) {
+                user.setMaxSeriesWinsWordly(user.getCurrentSeriesWinsWordly());
+            }
+        }
+
+
         playerSettingsRepository = PlayerSettingsRepository.getInstance(getApplicationContext());
-        int user_Id = playerSettingsRepository.getCurrentUserId();
-        PlayerSettingsModel user_Ac = playerSettingsRepository.getUserData(user_Id);
-        if(user_Ac.getSound()==1) {
+        int userSettingsId = playerSettingsRepository.getCurrentUserId();
+        PlayerSettingsModel settings = playerSettingsRepository.getUserData(userSettingsId);
+
+        if (settings.getSound() == 1) {
             MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.game_win_sound);
             mediaPlayer.start();
         }
-        switch (currentAttemptIndex) {
-            case 0:user.setOneAttempt(user.getOneAttempt() + 1);break;
-            case 1:user.setOneAttempt(user.getTwoAttempt() + 1);break;
-            case 2:user.setOneAttempt(user.getThreeAttempt() + 1);break;
-            case 3:user.setOneAttempt(user.getFourAttempt() + 1);break;
-            case 4:user.setOneAttempt(user.getFiveAttempt() + 1);break;
-            case 5:user.setOneAttempt(user.getSixAttempt() + 1);break;
-        }
+
+
         ContentValues values = new ContentValues();
-        if(user.getBestAttempt()!=0 || user.getBestAttempt()> currentAttemptIndex+1){
-            user.setBestAttempt(currentAttemptIndex+1);
-        }
 
         values.put("level", user.getLevel());
         values.put("money", user.getMoney());
-        values.put("allGames", user.getAllGames());
-        values.put("gamesWin", user.getGamesWin());
-        values.put("currentSeriesWins",user.getCurrentSeriesWins());
-        switch (currentAttemptIndex) {
-            case 0: values.put("oneAttempt",user.getOneAttempt());break;
-            case 1: values.put("twoAttempt",user.getOneAttempt());break;
-            case 2: values.put("threeAttempt",user.getOneAttempt());break;
-            case 3: values.put("fourAttempt",user.getOneAttempt());break;
-            case 4: values.put("fiveAttempt",user.getOneAttempt());break;
-            case 5: values.put("sixAttempt",user.getOneAttempt());break;
-        }
-        values.put("currentSeriesWins",user.getCurrentSeriesWins());
-        values.put("bestAttempt",user.getBestAttempt());
+
+        values.put("gamesWinWordly", user.getGamesWinWordly());
+        values.put("currentSeriesWinsWordly", user.getCurrentSeriesWinsWordly());
+        values.put("maxSeriesWinsWordly", user.getMaxSeriesWinsWordly());
 
         DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
         dataFromUserAPI.updateUser(user, new CallbackUser() {
             @Override
-            public void onSuccess(PlayerModel playerModel) {
-
-
-            }
+            public void onSuccess(PlayerModel playerModel) {}
 
             @Override
-            public void onError(Throwable throwable) {
-
-            }
+            public void onError(Throwable throwable) {}
         });
 
         playerRepository.updateUserData(userId, values);
+
         showGameWinDialog();
     }
-    private void playerLose(){
 
+    private void playerLose() {
 
         PlayerRepository playerRepository = PlayerRepository.getInstance(getApplicationContext());
         int userId = playerRepository.getCurrentUserId();
         PlayerModel user = playerRepository.getUserData(userId);
-        if(game_mode==2) {
-            if(user.getLevel()>0){user.setLevel(user.getLevel() - 1);}
-            else {user.setLevel(0);}
+
+
+        if (game_mode == 2) {   // Wordly mode
+            // level cannot be negative
+            if (user.getLevel() > 0) {
+                user.setLevel(user.getLevel() - 1);
+            } else {
+                user.setLevel(0);
+            }
+
+            // reset win streak
+            user.setCurrentSeriesWinsWordly(0);
         }
 
-        if(game_mode==2) {
-            user.setAllGames(user.getAllGames() + 1);
-        }
-        if(user.getMaxSeriesWins()<user.getCurrentSeriesWins()){user.setMaxSeriesWins(user.getCurrentSeriesWins());}
-        user.setCurrentSeriesWins(0);
+
         playerSettingsRepository = PlayerSettingsRepository.getInstance(getApplicationContext());
-        int user_Id = playerSettingsRepository.getCurrentUserId();
-        PlayerSettingsModel user_Ac = playerSettingsRepository.getUserData(user_Id);
-        if(user_Ac.getSound()==1) {
+        int userSettingsId = playerSettingsRepository.getCurrentUserId();
+        PlayerSettingsModel settings = playerSettingsRepository.getUserData(userSettingsId);
+
+        if (settings.getSound() == 1) {
             MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.game_lose_sound);
-            mediaPlayer.start();}
+            mediaPlayer.start();
+        }
+
 
         ContentValues values = new ContentValues();
         values.put("level", user.getLevel());
+        if (game_mode == 2) {
+            values.put("currentSeriesWinsWordly", 0);
+        }
+
         values.put("money", user.getMoney());
-        values.put("allGames", user.getAllGames());
-        values.put("currentSeriesWins", user.getCurrentSeriesWins());
-        values.put("maxSeriesWins", user.getMaxSeriesWins());
         playerRepository.updateUserData(userId, values);
+
 
         DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
         dataFromUserAPI.updateUser(user, new CallbackUser() {
             @Override
-            public void onSuccess(PlayerModel playerModel) {
-
-            }
+            public void onSuccess(PlayerModel playerModel) { }
 
             @Override
-            public void onError(Throwable throwable) {
-
-            }
+            public void onError(Throwable throwable) { }
         });
+
         showGameOverDialog();
     }
+
 
     private Set<Integer> hintedIndexes = new HashSet<>();
 

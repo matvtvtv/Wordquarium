@@ -288,7 +288,7 @@ public class GameChainActivity extends AppCompatActivity {
 
         if (popupGameText != null) popupGameText.setText(" ");
         if (popupGameWin != null) popupGameWin.setText("Вы ответили на");
-        if (popupGame != null) popupGame.setText(String.valueOf(Number + 1) + " слов");
+        if (popupGame != null) popupGame.setText(String.valueOf(Number) + " слов");
         if (playerWon && popupGameDia != null) popupGameDia.setText("Вы победили");
 
         btnRestart.setOnClickListener(v -> {

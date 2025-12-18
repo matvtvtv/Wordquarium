@@ -38,31 +38,37 @@ public class PlayerRepository {
     // Регистрация нового пользователя
     public void userRegistration(PlayerModel playerModel, Context context) {
         ContentValues values = new ContentValues();
+
         values.put("login", playerModel.getLogin());
         values.put("password", playerModel.getPassword());
+
+        // Wordly stats
         values.put("level", playerModel.getLevel());
-        values.put("allGames",playerModel.getAllGames());
-        values.put("gamesWin", playerModel.getGamesWin());
-        values.put("maxSeriesWins",playerModel.getMaxSeriesWins());
-        values.put("currentSeriesWins", playerModel.getCurrentSeriesWins());
-        values.put("bestAttempt", playerModel.getBestAttempt());
-        values.put("oneAttempt", playerModel.getOneAttempt());
-        values.put("twoAttempt",playerModel.getTwoAttempt());
-        values.put("threeAttempt", playerModel.getThreeAttempt());
-        values.put("fourAttempt", playerModel.getFourAttempt());
-        values.put("fiveAttempt", playerModel.getFiveAttempt());
-        values.put("sixAttempt", playerModel.getSixAttempt());
-        values.put("money",playerModel.getMoney());
+        values.put("gamesWinWordly", playerModel.getGamesWinWordly());
+        values.put("maxSeriesWinsWordly", playerModel.getMaxSeriesWinsWordly());
+        values.put("currentSeriesWinsWordly", playerModel.getCurrentSeriesWinsWordly());
+
+        // Game modes
+        values.put("bestChainEndless", playerModel.getBestChainEndless());
+        values.put("bestChainSpeed", playerModel.getBestChainSpeed());
+        values.put("bestChainTime", playerModel.getBestChainTime());
+
+        // Cryptogram wins
+        values.put("cryptogramEasyWins", playerModel.getCryptogramEasyWins());
+        values.put("cryptogramMidWins", playerModel.getCryptogramMiddleWins());
+        values.put("cryptogramHardWins", playerModel.getCryptogramHardWins());
+
+        // Money + Word of the day
+        values.put("money", playerModel.getMoney());
         values.put("wordDay", playerModel.getWordDay());
-//        if (profileImage == null) {
-//            profileImage = getDefaultProfileImage(context);
-//        }
 
         int userId = (int) db.insert("user", null, values);
+
         if (userId != -1) {
-            saveUserId(userId); // Сохраняем ID нового пользователя
+            saveUserId(userId);
         }
     }
+
 
     // Проверка, существует ли пользователь
     public boolean isValidUser(String login) {
@@ -110,35 +116,40 @@ public class PlayerRepository {
     // Получение данных пользователя
     public PlayerModel getUserData(int userId) {
         PlayerModel player = null;
-        String query = "SELECT * FROM " + DatabaseHelper.USER_TABLE + " WHERE " + DatabaseHelper.COLUMN_USER_ID + " = ?";
+
+        String query = "SELECT * FROM " + DatabaseHelper.USER_TABLE +
+                " WHERE " + DatabaseHelper.COLUMN_USER_ID + " = ?";
+
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
-//
+
         if (cursor.moveToFirst()) {
 
             player = new PlayerModel(
-                    cursor.getInt(0),  // ID
-                    cursor.getString(1), // Login
-                    cursor.getString(2), // Password
-                    cursor.getInt(3), // Level
-                    cursor.getInt(4), // allGames
-                    cursor.getInt(5), // gamesWin
-                    cursor.getInt(6), // maxSeriesWins
-                    cursor.getInt(7),  // currentSeriesWins
-                    cursor.getInt(8), // bestAttempt
-                    cursor.getInt(9), // oneAttempt
-                    cursor.getInt(10), // twoAttempt
-                    cursor.getInt(11),  // threeAttempt
-                    cursor.getInt(12), // fourAttempt
-                    cursor.getInt(13),  // fiveAttempt
-                    cursor.getInt(14),// sixAttempt
-                    cursor.getInt(15),//money
-                    cursor.getString(16)//word day
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_LOGIN)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_PASSWORD)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_LEVEL_WORDLY)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_GAMES_WIN_WORDLY)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_MAX_SERIES_WINS_WORDLY)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_CURRENT_SERIES_WINS_WORDLY)),
 
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_BEST_CHAIN_ENDLESS)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_BEST_CHAIN_SPEED)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_BEST_CHAIN_TIME)),
+
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_CRYPTOGRAM_EASY_WINS)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_CRYPTOGRAM_MIDDLE_WINS)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_CRYPTOGRAM_HARD_WINS)),
+
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_MONEY)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_WORDDAY))
             );
         }
+
         cursor.close();
         return player;
     }
+
 
     // Обновление данных пользователя
     public void updateUserData(int userId, ContentValues values) {

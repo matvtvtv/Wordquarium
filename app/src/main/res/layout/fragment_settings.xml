@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/light_background"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragments.SettingsFragment">
 
@@ -158,47 +159,47 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:clickable="true"
-                app:cardBackgroundColor="@color/light_aqua"
-                app:cardCornerRadius="20dp"
-                app:cardUseCompatPadding="true">
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:layout_marginStart="10dp"-->
+<!--                android:layout_marginEnd="10dp"-->
+<!--                android:clickable="true"-->
+<!--                app:cardBackgroundColor="@color/light_aqua"-->
+<!--                app:cardCornerRadius="20dp"-->
+<!--                app:cardUseCompatPadding="true">-->
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/gameNotification"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+<!--                <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                    android:id="@+id/gameNotification"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent">-->
 
-                    <TextView
-                        android:id="@+id/gameNotificationText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:text="Уведомления"
-                        android:textColor="@color/black"
-                        android:textSize="24sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/gameNotification"
-                        app:layout_constraintStart_toStartOf="@+id/gameNotification"
-                        app:layout_constraintTop_toTopOf="@+id/gameNotification" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/gameNotificationText"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginStart="20dp"-->
+<!--                        android:text="Уведомления"-->
+<!--                        android:textColor="@color/black"-->
+<!--                        android:textSize="24sp"-->
+<!--                        app:layout_constraintBottom_toBottomOf="@+id/gameNotification"-->
+<!--                        app:layout_constraintStart_toStartOf="@+id/gameNotification"-->
+<!--                        app:layout_constraintTop_toTopOf="@+id/gameNotification" />-->
 
-                    <Switch
-                        android:id="@+id/gameSwitchNotification"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_marginEnd="30dp"
-                        android:thumbTint="@color/switch_thumb_color"
-                        android:trackTint="@color/switch_track_color"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/gameNotification"
-                        app:layout_constraintTop_toTopOf="@+id/gameNotification"
-                        tools:ignore="UseSwitchCompatOrMaterialXml" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+<!--                    <Switch-->
+<!--                        android:id="@+id/gameSwitchNotification"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="0dp"-->
+<!--                        android:layout_marginEnd="30dp"-->
+<!--                        android:thumbTint="@color/switch_thumb_color"-->
+<!--                        android:trackTint="@color/switch_track_color"-->
+<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                        app:layout_constraintEnd_toEndOf="@+id/gameNotification"-->
+<!--                        app:layout_constraintTop_toTopOf="@+id/gameNotification"-->
+<!--                        tools:ignore="UseSwitchCompatOrMaterialXml" />-->
+<!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-            </androidx.cardview.widget.CardView>
+<!--            </androidx.cardview.widget.CardView>-->
             <androidx.cardview.widget.CardView
                 android:id="@+id/accountExit"
                 android:layout_width="match_parent"

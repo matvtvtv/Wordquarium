@@ -71,7 +71,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-medium"
                             android:paddingBottom="12dp"
-                            android:text="На время"
+                            android:text=""
                             android:textAlignment="center"
                             android:textColor="#5B3D33"
                             android:textSize="25dp" />

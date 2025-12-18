@@ -3,6 +3,7 @@ package com.example.wordquarium.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -16,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SettingsActivity extends AppCompatActivity {
 
-    private Button exit;
+    private ImageView exit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -97,7 +97,7 @@ public class MultiUserNewWordForFriend extends Fragment {
                 SQLiteDatabase db = databaseHelper.getWritableDatabase();
                 wordsRepository = new WordsRepository(db);
 
-                if (!wordsRepository.isValidWord(wordText)) {
+                if (wordsRepository.isValidWord(wordText)) {
                     Toast.makeText(requireContext(),
                             "Похоже, я не знаю такого слова", Toast.LENGTH_SHORT).show();
                     return;

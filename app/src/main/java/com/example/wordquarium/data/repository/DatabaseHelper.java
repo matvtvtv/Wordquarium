@@ -1,13 +1,8 @@
 package com.example.wordquarium.data.repository;
 
 import android.content.Context;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "words.db";
@@ -27,18 +22,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_USER_ID = "userId";
     public static final String COLUMN_USER_LOGIN = "login";
     public static final String COLUMN_USER_PASSWORD = "password";
-    public static final String COLUMN_USER_LEVEL = "level";
-    public static final String COLUMN_USER_ALL_GAMES = "allGames";
-    public static final String COLUMN_USER_GAMES_WIN = "gamesWin";
-    public static final String COLUMN_USER_MAX_SERIES_WINS = "maxSeriesWins";
-    public static final String COLUMN_USER_CURRENT_SERIES_WINS= "currentSeriesWins";
-    public static final String COLUMN_USER_BEST_ATTEMPT= "bestAttempt";
-    public static final String COLUMN_USER_ONE_ATTEMPT= "oneAttempt";
-    public static final String COLUMN_USER_TWO_ATTEMPT= "twoAttempt";
-    public static final String COLUMN_USER_THREE_ATTEMPT= "threeAttempt";
-    public static final String COLUMN_USER_FOUR_ATTEMPT= "fourAttempt";
-    public static final String COLUMN_USER_FIVE_ATTEMPT= "fiveAttempt";
-    public static final String COLUMN_USER_SIX_ATTEMPT= "sixAttempt";
+    public static final String COLUMN_USER_LEVEL_WORDLY = "level";
+    public static final String COLUMN_USER_GAMES_WIN_WORDLY = "gamesWinWordly";
+    public static final String COLUMN_USER_MAX_SERIES_WINS_WORDLY = "maxSeriesWinsWordly";
+    public static final String COLUMN_USER_CURRENT_SERIES_WINS_WORDLY = "currentSeriesWinsWordly";
+    public static final String COLUMN_USER_BEST_CHAIN_ENDLESS = "bestChainEndless";
+    public static final String COLUMN_USER_BEST_CHAIN_SPEED = "bestChainSpeed";
+    public static final String COLUMN_USER_BEST_CHAIN_TIME = "bestChainTime";
+    public static final String COLUMN_USER_CRYPTOGRAM_EASY_WINS = "cryptogramEasyWins";
+    public static final String COLUMN_USER_CRYPTOGRAM_MIDDLE_WINS = "cryptogramMidWins";
+    public static final String COLUMN_USER_CRYPTOGRAM_HARD_WINS = "cryptogramHardWins";
     public static final String COLUMN_USER_MONEY = "money";
     public static final String COLUMN_USER_WORDDAY = "wordDay";
 
@@ -52,9 +45,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public static final String ROAD_TEXT_TABLE = "road_text_table";
-    public static final String COLUMN_ROAD_TEXT_ID = "road_text_id"; // PK
-    public static final String COLUMN_ROAD_TEXT = "road_text";       // TEXT
-
+    public static final String COLUMN_ROAD_TEXT_ID = "road_text_id";
+    public static final String COLUMN_ROAD_TEXT = "road_text";
 
 
 
@@ -63,18 +55,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_USER_LOGIN + " TEXT, " +
             COLUMN_USER_PASSWORD + " TEXT, " +
-            COLUMN_USER_LEVEL + " INTEGER, " +
-            COLUMN_USER_ALL_GAMES + " INTEGER, " +
-            COLUMN_USER_GAMES_WIN + " INTEGER, " +
-            COLUMN_USER_MAX_SERIES_WINS + " INTEGER, " +
-            COLUMN_USER_CURRENT_SERIES_WINS + " INTEGER, " +
-            COLUMN_USER_BEST_ATTEMPT + " INTEGER, " +
-            COLUMN_USER_ONE_ATTEMPT + " INTEGER, " +
-            COLUMN_USER_TWO_ATTEMPT + " INTEGER, " +
-            COLUMN_USER_THREE_ATTEMPT + " INTEGER, " +
-            COLUMN_USER_FOUR_ATTEMPT + " INTEGER, " +
-            COLUMN_USER_FIVE_ATTEMPT + " INTEGER, " +
-            COLUMN_USER_SIX_ATTEMPT + " INTEGER, " +
+            COLUMN_USER_LEVEL_WORDLY + " INTEGER, " +
+            COLUMN_USER_GAMES_WIN_WORDLY + " INTEGER, " +
+            COLUMN_USER_MAX_SERIES_WINS_WORDLY + " INTEGER, " +
+            COLUMN_USER_CURRENT_SERIES_WINS_WORDLY + " INTEGER, " +
+            COLUMN_USER_BEST_CHAIN_ENDLESS + " INTEGER, " +
+            COLUMN_USER_BEST_CHAIN_SPEED + " INTEGER, " +
+            COLUMN_USER_BEST_CHAIN_TIME + " INTEGER, " +
+            COLUMN_USER_CRYPTOGRAM_EASY_WINS + " INTEGER, " +
+            COLUMN_USER_CRYPTOGRAM_MIDDLE_WINS + " INTEGER, " +
+            COLUMN_USER_CRYPTOGRAM_HARD_WINS + " INTEGER, " +
             COLUMN_USER_MONEY + " INTEGER, " +
 
             COLUMN_USER_WORDDAY + " INTEGER)";

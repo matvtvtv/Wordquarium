@@ -41,7 +41,7 @@
     <Button
         android:id="@+id/btnRestart"
         android:layout_width="match_parent"
-        android:layout_height="59dp"
+        android:layout_height="70dp"
         android:layout_marginTop="10dp"
         android:backgroundTint="@color/green"
         android:gravity="center"
@@ -52,7 +52,7 @@
     <Button
         android:id="@+id/btnMainMenu"
         android:layout_width="match_parent"
-        android:layout_height="59dp"
+        android:layout_height="70dp"
         android:layout_marginTop="10dp"
         android:backgroundTint="@color/yellow"
         android:gravity="center"

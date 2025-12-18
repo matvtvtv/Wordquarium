@@ -160,10 +160,7 @@ public class WordsRepository {
         return result;
     }
 
-    /**
-     * Быстрая проверка наличия слова в БД (игнорирует регистр).
-     * Использует LOWER(column) = ? для надёжного сравнения.
-     */
+
     public boolean isValidWord(String guess) {
         if (guess == null) return false;
         String normalized = guess.trim().toLowerCase();
