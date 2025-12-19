@@ -8,16 +8,6 @@
     android:background="@color/light_background"
     tools:context=".ui.MainActivity">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/navig_menu"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/viewPager"
-        app:layout_constraintTop_toTopOf="@+id/viewPager" />
-
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="0dp"
@@ -53,7 +43,7 @@
         android:layout_marginLeft="18dp"
         android:layout_marginTop="10dp"
         android:background="@android:color/transparent"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/group_17"

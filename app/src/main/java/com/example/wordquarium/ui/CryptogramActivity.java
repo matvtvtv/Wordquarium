@@ -1,6 +1,7 @@
 package com.example.wordquarium.ui;
 
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -17,6 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wordquarium.R;
 import com.example.wordquarium.data.model.CharCell;
+import com.example.wordquarium.data.model.PlayerModel;
+import com.example.wordquarium.data.network.CallbackUser;
+import com.example.wordquarium.data.network.DataFromUserAPI;
+import com.example.wordquarium.data.repository.PlayerRepository;
 import com.example.wordquarium.databinding.ActivityCryptogramBinding;
 import com.example.wordquarium.logic.adapters.CryptogramAdapter;
 import com.example.wordquarium.logic.adapters.Keyboard;
@@ -255,9 +260,32 @@ public class CryptogramActivity extends AppCompatActivity {
         Button btnRestart = endDialog.findViewById(R.id.btnRestart);
         Button btnMainMenu = endDialog.findViewById(R.id.btnMainMenu);
 
+        PlayerRepository playerRepository = PlayerRepository.getInstance(this);
+        int user_Id = playerRepository.getCurrentUserId();
+        PlayerModel user = playerRepository.getUserData(user_Id);
+        ContentValues values = new ContentValues();
         if (popupGameText != null) popupGameText.setText(" ");
         if (popupGameWin != null) popupGameWin.setText(playerWon ? "Вы выиграли" : "Вы проиграли");
+        if (playerWon){
+            switch (REVEAL_LETTERS_COUNT){
+                case 4:
+                    values.put("cryptogramHardWins",user.getCryptogramHardWins()+1);
+                case 6:
+                    values.put("cryptogramMidWins",user.getCryptogramMiddleWins()+1);
+                case 8:
+                    values.put("cryptogramEasyWins",user.getCryptogramEasyWins()+1);
+            }
 
+        }
+        playerRepository.updateUserData(user_Id, values);
+        DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
+        dataFromUserAPI.updateUser(user, new CallbackUser() {
+            @Override
+            public void onSuccess(PlayerModel playerModel) { }
+
+            @Override
+            public void onError(Throwable throwable) { }
+        });
         int totalLetters = 0;
         for (CharCell c : cells) if (c.isLetter()) totalLetters++;
         if (popupGame != null) popupGame.setText(totalLetters + " букв");

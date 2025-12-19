@@ -19,10 +19,12 @@
         android:theme="@style/Theme.Wordquarium"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.StatisticsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.MultiUserActivity"
             android:exported="false"
             android:theme="@style/Theme.Wordquarium" />
-
         <activity
             android:name=".ui.CryptogramActivity"
             android:exported="false" />

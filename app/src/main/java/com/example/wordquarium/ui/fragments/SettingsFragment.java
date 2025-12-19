@@ -35,7 +35,6 @@ import java.io.IOException;
 
 public class SettingsFragment extends Fragment {
 
-    private static final String TAG = "SettingsFragment";
 
     private TextView login;
     private CardView accountExit;
@@ -76,7 +75,6 @@ public class SettingsFragment extends Fragment {
                 }
             }
         } else {
-            Log.w(TAG, "playerRepository is null");
         }
 
         // Account exit
@@ -142,7 +140,6 @@ public class SettingsFragment extends Fragment {
             picture.setOnClickListener(v -> openGallery());
             loadProfileImageSafely();
         } else {
-            Log.w(TAG, "profile ImageView is null — cannot set background or click listener");
         }
 
         return view;
@@ -177,7 +174,6 @@ public class SettingsFragment extends Fragment {
 
     private void loadProfileImageSafely() {
         if (playerSettingsRepository == null) {
-            Log.w(TAG, "playerSettingsRepository is null — cannot load profile image");
             if (picture != null) picture.setImageResource(R.drawable.default_profile);
             return;
         }
@@ -186,7 +182,6 @@ public class SettingsFragment extends Fragment {
         PlayerSettingsModel player = playerSettingsRepository.getUserData(userId);
 
         if (picture == null) {
-            Log.w(TAG, "picture ImageView is null — skipping loadProfileImage");
             return;
         }
 
@@ -195,7 +190,6 @@ public class SettingsFragment extends Fragment {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(player.getProfileImage(), 0, player.getProfileImage().length);
                 picture.setImageBitmap(bitmap);
             } catch (Exception e) {
-                Log.w(TAG, "Failed to decode profile image: " + e.getMessage());
                 picture.setImageResource(R.drawable.default_profile);
             }
         } else {
@@ -223,7 +217,6 @@ public class SettingsFragment extends Fragment {
 
                 if (picture != null) picture.setImageBitmap(resizedBitmap);
             } catch (IOException e) {
-                Log.e(TAG, "Failed to get bitmap from gallery: " + e.getMessage());
             }
         }
     }
@@ -266,10 +259,8 @@ public class SettingsFragment extends Fragment {
                 values.put("profileImage", imageBytes);
                 playerSettingsRepository.updateUserData(userId, values);
             } else {
-                Log.w(TAG, "playerSettingsRepository is null — cannot save profile image");
             }
         } catch (Exception e) {
-            Log.e(TAG, "saveImageToDatabase error: " + e.getMessage());
         }
     }
 }

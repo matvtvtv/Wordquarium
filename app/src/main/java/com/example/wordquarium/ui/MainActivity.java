@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         statButton.setOnClickListener(v -> {
-            startActivity(new Intent(this, RegistrationActivity.class));
+            startActivity(new Intent(this, StatisticsActivity.class));
             finish();
         });
     }

@@ -4,6 +4,7 @@ import static android.view.Window.FEATURE_NO_TITLE;
 import static com.example.wordquarium.logic.adapters.LetterStatus.GRAY;
 
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,6 +27,8 @@ import com.example.wordquarium.R;
 import com.example.wordquarium.data.model.PlayerModel;
 import com.example.wordquarium.data.model.PlayerSettingsModel;
 import com.example.wordquarium.data.model.WordsModel;
+import com.example.wordquarium.data.network.CallbackUser;
+import com.example.wordquarium.data.network.DataFromUserAPI;
 import com.example.wordquarium.data.repository.DatabaseHelper;
 import com.example.wordquarium.data.repository.PlayerRepository;
 import com.example.wordquarium.data.repository.PlayerSettingsRepository;
@@ -290,7 +293,28 @@ public class GameChainActivity extends AppCompatActivity {
         if (popupGameWin != null) popupGameWin.setText("Вы ответили на");
         if (popupGame != null) popupGame.setText(String.valueOf(Number) + " слов");
         if (playerWon && popupGameDia != null) popupGameDia.setText("Вы победили");
+        PlayerRepository playerRepository = PlayerRepository.getInstance(this);
+        int user_Id = playerRepository.getCurrentUserId();
+        PlayerModel user = playerRepository.getUserData(user_Id);
+        ContentValues values = new ContentValues();
+        if(gamemode){
+            if(time==66){
+                if(user.getBestChainEndless()<Number){
+                    values.put("bestChainEndless", Number);
+                }
+            }
+            else if(user.getBestChainSpeed()<Number){values.put("bestChainSpeed", Number);}
+        }
+        else if(user.getBestChainTime()<Number){values.put("bestChainTime", Number);}
+        playerRepository.updateUserData(user_Id, values);
+        DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
+        dataFromUserAPI.updateUser(user, new CallbackUser() {
+            @Override
+            public void onSuccess(PlayerModel playerModel) { }
 
+            @Override
+            public void onError(Throwable throwable) { }
+        });
         btnRestart.setOnClickListener(v -> {
             if (countdownTimer != null) countdownTimer.stop();
             Intent intent = new Intent(this, GameChainActivity.class);
