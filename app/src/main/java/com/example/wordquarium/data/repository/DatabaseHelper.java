@@ -11,7 +11,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String WORD_TABLE = "words";
     public static final String COLUMN_ID_WORDS = "id";
     public static final String COLUMN_WORD_WORDS = "word";
-    public static final String COLUMN_DIFFICULT_WORDS = "difficulty";
     public static final String COLUMN_LENGTH_WORDS = "length";
 
 
@@ -72,7 +71,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_WORDS= "CREATE TABLE " + WORD_TABLE + " ( " +
             COLUMN_ID_WORDS + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_WORD_WORDS + " TEXT, " +
-            COLUMN_DIFFICULT_WORDS + " INTEGER, " +
             COLUMN_LENGTH_WORDS + " INTEGER )";
 
     private static final String CREATE_USER_SETTINGS_TABLE = "CREATE TABLE " +  USER_SETTINGS_TABLE+ " ( " +

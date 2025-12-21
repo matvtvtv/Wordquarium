@@ -41,7 +41,6 @@ public class WordsRepository {
                 ContentValues values = new ContentValues();
                 values.put(DatabaseHelper.COLUMN_ID_WORDS, word.getId());
                 values.put(DatabaseHelper.COLUMN_WORD_WORDS, word.getWord());
-                values.put(DatabaseHelper.COLUMN_DIFFICULT_WORDS, word.getDifficulty());
                 values.put(DatabaseHelper.COLUMN_LENGTH_WORDS, word.getLength());
                 db.insertWithOnConflict(DatabaseHelper.WORD_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             }
@@ -70,9 +69,8 @@ public class WordsRepository {
                 do {
                     int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_WORDS));
                     String word = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORDS));
-                    int diff = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DIFFICULT_WORDS));
                     int len = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LENGTH_WORDS));
-                    result.add(new WordsModel(id, word, diff, len));
+                    result.add(new WordsModel(id, word, len));
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -95,9 +93,8 @@ public class WordsRepository {
                 do {
                     int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_WORDS));
                     String word = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORDS));
-                    int diff = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DIFFICULT_WORDS));
                     int len = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LENGTH_WORDS));
-                    result.add(new WordsModel(id, word, diff, len));
+                    result.add(new WordsModel(id, word, len));
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -123,9 +120,8 @@ public class WordsRepository {
                 do {
                     int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_WORDS));
                     String word = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORDS));
-                    int diff = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DIFFICULT_WORDS));
                     int len = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LENGTH_WORDS));
-                    result.add(new WordsModel(id, word, diff, len));
+                    result.add(new WordsModel(id, word, len));
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -134,31 +130,6 @@ public class WordsRepository {
         return result;
     }
 
-    /**
-     * Получить слова по длине и сложности.
-     */
-    public List<WordsModel> getWordsByLengthAndDifficulty(int difficulty, int length) {
-        List<WordsModel> result = new ArrayList<>();
-        String query = "SELECT * FROM " + DatabaseHelper.WORD_TABLE +
-                " WHERE " + DatabaseHelper.COLUMN_DIFFICULT_WORDS + " = ? AND " +
-                DatabaseHelper.COLUMN_LENGTH_WORDS + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(difficulty), String.valueOf(length)});
-
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_WORDS));
-                    String word = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORDS));
-                    int diff = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DIFFICULT_WORDS));
-                    int len = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LENGTH_WORDS));
-                    result.add(new WordsModel(id, word, diff, len));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        return result;
-    }
 
 
     public boolean isValidWord(String guess) {

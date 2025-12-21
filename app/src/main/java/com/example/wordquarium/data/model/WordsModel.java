@@ -8,6 +8,5 @@ public class WordsModel {
     private int id;
     private String word;
     private int length;
-    private int difficulty;
 }
 

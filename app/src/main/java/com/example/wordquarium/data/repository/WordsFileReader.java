@@ -24,18 +24,18 @@ public class WordsFileReader {
     }
 
     private void loadWords(Context context) {
-        try (InputStream is = context.getAssets().open("final.txt");
+        try (InputStream is = context.getAssets().open("words_with_length.txt");
              BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             String line;
+            int id=0;
             while ((line = reader.readLine()) != null) {
                 // Формат строки: id,слово,difficulty,length
                 String[] parts = line.split(",");
-                if (parts.length == 4) {
-                    int id = Integer.parseInt(parts[0].trim());
-                    String word = parts[1].trim();
-                    int length = Integer.parseInt(parts[2].trim());
-                    int difficulty = Integer.parseInt(parts[3].trim());
-                    wordsList.add(new WordsModel(id, word, difficulty, length));
+                if (parts.length == 2) {
+                    id++;
+                    String word = parts[0].trim();
+                    int length = Integer.parseInt(parts[1].trim());
+                    wordsList.add(new WordsModel(id, word, length));
 
                 }
             }

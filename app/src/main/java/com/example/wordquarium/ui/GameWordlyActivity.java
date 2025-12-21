@@ -34,7 +34,9 @@ import com.example.wordquarium.data.model.PlayerModel;
 import com.example.wordquarium.data.model.PlayerSettingsModel;
 import com.example.wordquarium.data.model.WordsModel;
 import com.example.wordquarium.data.network.CallbackUser;
+import com.example.wordquarium.data.network.CallbackWord;
 import com.example.wordquarium.data.network.DataFromUserAPI;
+import com.example.wordquarium.data.network.DataFromWordAPI;
 import com.example.wordquarium.data.repository.DatabaseHelper;
 import com.example.wordquarium.data.repository.PlayerRepository;
 import com.example.wordquarium.data.repository.PlayerSettingsRepository;
@@ -462,6 +464,7 @@ public class GameWordlyActivity extends AppCompatActivity {
         TextView popupGameWin = dialog.findViewById(R.id.popupGameWinText);
         Button btnRestart = dialog.findViewById(R.id.btnRestart);
         Button btnMainMenu = dialog.findViewById(R.id.btnMainMenu);
+        Button btnKnow = dialog.findViewById(R.id.btnKnow);
 
         popupGameWin.setText( gameLogic.getHiddenWord());
 
@@ -493,6 +496,39 @@ public class GameWordlyActivity extends AppCompatActivity {
             finish();
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+        });
+
+        btnKnow.setOnClickListener(v -> {
+            Dialog dialog_know = new Dialog(this);
+            dialog_know.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog_know.setContentView(R.layout.popup_know);
+            dialog_know.setCancelable(true);
+            dialog_know.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+            DataFromWordAPI dataFromWordAPI = new DataFromWordAPI();
+            TextView tvAnswer = dialog_know.findViewById(R.id.tvAnswer);
+
+
+            dataFromWordAPI.getWordExplanation(gameLogic.getHiddenWord(), new CallbackWord() {
+                @Override
+                public void onSuccess(String explanation) {
+                    runOnUiThread(() -> {
+                        tvAnswer.setText(explanation);
+                        dialog_know.show();
+
+                    });
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(getApplicationContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
+            });
+
+
+
         });
 
         dialog.show();
