@@ -15,9 +15,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +31,9 @@ import com.example.wordquarium.data.model.PlayerModel;
 import com.example.wordquarium.data.model.PlayerSettingsModel;
 import com.example.wordquarium.data.model.WordsModel;
 import com.example.wordquarium.data.network.CallbackUser;
+import com.example.wordquarium.data.network.CallbackWord;
 import com.example.wordquarium.data.network.DataFromUserAPI;
+import com.example.wordquarium.data.network.DataFromWordAPI;
 import com.example.wordquarium.data.repository.DatabaseHelper;
 import com.example.wordquarium.data.repository.PlayerRepository;
 import com.example.wordquarium.data.repository.PlayerSettingsRepository;
@@ -57,6 +62,7 @@ public class GameChainActivity extends AppCompatActivity {
     private Button btnCheck;
     private Button btnSkip;
     private TextView NumberText;
+    private TextView wordKnow;
     private ImageView btnExit;
 
     private WordsRepository wordsRepository;
@@ -152,6 +158,8 @@ public class GameChainActivity extends AppCompatActivity {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
+        wordKnow.setOnClickListener(v ->wordKnowDialog(WordView2) );
+
     }
 
     private void startNewGame() {
@@ -270,6 +278,7 @@ public class GameChainActivity extends AppCompatActivity {
         usedWords.add(appWord);
         logic.setAppWord(appWord);
         updateUIForAppWord(appWord);
+
     }
 
     private void showEndDialog(boolean playerWon, String message) {
@@ -344,6 +353,7 @@ public class GameChainActivity extends AppCompatActivity {
         btnSkip = binding.btnSkip;
         btnExit = binding.exitButton;
         NumberText = binding.numberText;
+        wordKnow = binding.wordKnow;
     }
 
     public void vibrateDevice(Context context, long milliseconds) {
@@ -423,5 +433,53 @@ public class GameChainActivity extends AppCompatActivity {
         if (countdownTimer != null && countdownTimer.isRunning()) {
             countdownTimer.stop();
         }
+    }
+
+    public void wordKnowDialog(String word){
+        countdownTimer.stop();
+        Dialog dialog_know = new Dialog(this);
+        dialog_know.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog_know.setContentView(R.layout.popup_know);
+        dialog_know.setCancelable(true);
+        dialog_know.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        TextView tvAnswer = dialog_know.findViewById(R.id.tvAnswer);
+        ProgressBar progressBar = dialog_know.findViewById(R.id.progressBar);
+
+        tvAnswer.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+
+        dialog_know.show();
+
+        DataFromWordAPI dataFromWordAPI = new DataFromWordAPI();
+
+        dataFromWordAPI.getWordExplanation(
+                word,
+                new CallbackWord() {
+
+                    @Override
+                    public void onSuccess(String explanation) {
+                        runOnUiThread(() -> {
+                            progressBar.setVisibility(View.GONE);
+                            tvAnswer.setVisibility(View.VISIBLE);
+                            tvAnswer.setText(explanation);
+                            countdownTimer.start();
+                        });
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        runOnUiThread(() -> {
+                            dialog_know.dismiss();
+                            Toast.makeText(
+                                    getApplicationContext(),
+                                    "Ошибка загрузки",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            countdownTimer.start();
+                        });
+                    }
+                }
+        );
     }
 }

@@ -55,4 +55,14 @@
         android:backgroundTint="@color/yellow"
         android:text="Главное меню"
         android:textColor="@android:color/white" />
+    <Button
+        android:id="@+id/btnKnow"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/light_cyan"
+        android:gravity="center"
+        android:text="Узнать значение слова"
+
+        android:textColor="@android:color/white" />
 </LinearLayout>

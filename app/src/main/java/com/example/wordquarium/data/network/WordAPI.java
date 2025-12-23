@@ -55,4 +55,41 @@ public class WordAPI {
             }
         });
     }
+
+    public void getWordHint(String word, CallbackWord callbackWord) {
+
+        OkHttpClient client = new OkHttpClient();
+
+
+
+        Request request = new Request.Builder()
+                .url(Api + "/word_hint/" + word)
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("WordAPI", "Error onFailure", e);
+                callbackWord.onError(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call,
+                                   @NonNull Response response) throws IOException {
+
+                if (response.isSuccessful() && response.body() != null) {
+                    String explanation = response.body().string();
+                    Log.d("WordAPI", "Response: " + explanation);
+                    callbackWord.onSuccess(explanation);
+                } else {
+                    Log.e("WordAPI", "Failed: " + response.code());
+                    callbackWord.onError(
+                            new Exception("Failed: " + response.code())
+                    );
+                }
+            }
+        });
+    }
 }

@@ -20,9 +20,11 @@ import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,10 +71,7 @@ public class GameWordlyActivity extends AppCompatActivity {
     private final int MAX_ATTEMPTS = 6;
     private GameWordlyLogic gameLogic;
     private WordsRepository wordsRepository;
-    private TextView popupGameOver;
-    private TextView popupGameWin;
-
-    private TextView moneyText;
+    private TextView tvHint;
     private PlayerSettingsRepository playerSettingsRepository;
 
 
@@ -183,8 +182,22 @@ public class GameWordlyActivity extends AppCompatActivity {
             finish();
         });
 
+        DataFromWordAPI dataFromWordAPI = new DataFromWordAPI();
+        dataFromWordAPI.getWordHint(gameLogic.getHiddenWord(), new CallbackWord() {
+            @Override
+            public void onSuccess(String hint) {
+                runOnUiThread(() -> {
+                    binding.tvHint.setText(hint);
+                });
+            }
 
-
+            @Override
+            public void onError(Throwable throwable) {
+                runOnUiThread(() -> {
+                    Toast.makeText(getApplicationContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
 
         binding.btnHint.setOnClickListener(v -> showHintDialog());
 
@@ -420,6 +433,7 @@ public class GameWordlyActivity extends AppCompatActivity {
         TextView popupGameOver = dialog.findViewById(R.id.popupGameOverText);
         Button btnRestart = dialog.findViewById(R.id.btnRestart);
         Button btnMainMenu = dialog.findViewById(R.id.btnMainMenu);
+        Button btnKnow = dialog.findViewById(R.id.btnKnow);
 
         popupGameOver.setText( gameLogic.getHiddenWord());
         TextView resoult_lose = dialog.findViewById(R.id.resoult_lose);
@@ -450,6 +464,51 @@ public class GameWordlyActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
+        btnKnow.setOnClickListener(v -> {
+
+            Dialog dialog_know = new Dialog(this);
+            dialog_know.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog_know.setContentView(R.layout.popup_know);
+            dialog_know.setCancelable(true);
+            dialog_know.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+            TextView tvAnswer = dialog_know.findViewById(R.id.tvAnswer);
+            ProgressBar progressBar = dialog_know.findViewById(R.id.progressBar);
+
+            tvAnswer.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+
+            dialog_know.show();
+
+            DataFromWordAPI dataFromWordAPI = new DataFromWordAPI();
+
+            dataFromWordAPI.getWordExplanation(
+                    gameLogic.getHiddenWord(),
+                    new CallbackWord() {
+
+                        @Override
+                        public void onSuccess(String explanation) {
+                            runOnUiThread(() -> {
+                                progressBar.setVisibility(View.GONE);
+                                tvAnswer.setVisibility(View.VISIBLE);
+                                tvAnswer.setText(explanation);
+                            });
+                        }
+
+                        @Override
+                        public void onError(Throwable throwable) {
+                            runOnUiThread(() -> {
+                                dialog_know.dismiss();
+                                Toast.makeText(
+                                        getApplicationContext(),
+                                        "Ошибка загрузки",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            });
+                        }
+                    }
+            );
+        });
 
         dialog.show();
     }
@@ -477,7 +536,6 @@ public class GameWordlyActivity extends AppCompatActivity {
         }
 
         btnRestart.setOnClickListener(v -> {
-            //dialog.dismiss();
             if(game_mode==1){
                 Toast.makeText(this, "Вы уже играли слово дня", Toast.LENGTH_SHORT).show();
 
@@ -485,10 +543,13 @@ public class GameWordlyActivity extends AppCompatActivity {
             else{
                 finish();
                 Intent intent = new Intent(this, GameWordlyActivity.class);
+                intent.putExtra("WORD_LENGTH", wordLength); // Передаем значение
+                intent.putExtra("GAME_MODE", game_mode);
+
                 startActivity(intent);
             }
 
-
+            //надо изменить закрытите
         });
 
         btnMainMenu.setOnClickListener(v -> {
@@ -499,37 +560,51 @@ public class GameWordlyActivity extends AppCompatActivity {
         });
 
         btnKnow.setOnClickListener(v -> {
+
             Dialog dialog_know = new Dialog(this);
             dialog_know.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog_know.setContentView(R.layout.popup_know);
             dialog_know.setCancelable(true);
             dialog_know.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-            DataFromWordAPI dataFromWordAPI = new DataFromWordAPI();
             TextView tvAnswer = dialog_know.findViewById(R.id.tvAnswer);
+            ProgressBar progressBar = dialog_know.findViewById(R.id.progressBar);
 
+            tvAnswer.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
 
-            dataFromWordAPI.getWordExplanation(gameLogic.getHiddenWord(), new CallbackWord() {
-                @Override
-                public void onSuccess(String explanation) {
-                    runOnUiThread(() -> {
-                        tvAnswer.setText(explanation);
-                        dialog_know.show();
+            dialog_know.show(); // ⚠️ показываем диалог СРАЗУ
 
-                    });
-                }
+            DataFromWordAPI dataFromWordAPI = new DataFromWordAPI();
 
-                @Override
-                public void onError(Throwable throwable) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(getApplicationContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-                }
-            });
+            dataFromWordAPI.getWordExplanation(
+                    gameLogic.getHiddenWord(),
+                    new CallbackWord() {
 
+                        @Override
+                        public void onSuccess(String explanation) {
+                            runOnUiThread(() -> {
+                                progressBar.setVisibility(View.GONE);
+                                tvAnswer.setVisibility(View.VISIBLE);
+                                tvAnswer.setText(explanation);
+                            });
+                        }
 
-
+                        @Override
+                        public void onError(Throwable throwable) {
+                            runOnUiThread(() -> {
+                                dialog_know.dismiss();
+                                Toast.makeText(
+                                        getApplicationContext(),
+                                        "Ошибка загрузки",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            });
+                        }
+                    }
+            );
         });
+
 
         dialog.show();
     }

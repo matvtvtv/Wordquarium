@@ -32,6 +32,19 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/wordKnow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_background_yellow"
+            android:padding="15dp"
+            android:text="?"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/numberText"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
             android:id="@+id/levelGameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

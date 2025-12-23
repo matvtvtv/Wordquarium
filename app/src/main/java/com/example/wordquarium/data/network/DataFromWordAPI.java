@@ -21,4 +21,17 @@ public class DataFromWordAPI {
             }
         });
     }
+    public void getWordHint(String word, CallbackWord callbackWord) {
+        wordAPI.getWordHint(word, new CallbackWord() {
+            @Override
+            public void onSuccess(String hint) {
+                callbackWord.onSuccess(hint);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                callbackWord.onError(throwable);
+            }
+        });
+    }
 }
