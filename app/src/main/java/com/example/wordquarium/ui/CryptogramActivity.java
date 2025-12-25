@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -255,29 +256,37 @@ public class CryptogramActivity extends AppCompatActivity {
         if (endDialog.getWindow() != null) endDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         TextView popupGameText = endDialog.findViewById(R.id.textView9);
-        TextView popupGameWin = endDialog.findViewById(R.id.popupGameWinText);
+        TextView tvGameWin = endDialog.findViewById(R.id.tvGameWin);
         TextView popupGame = endDialog.findViewById(R.id.resoult_win);
         Button btnRestart = endDialog.findViewById(R.id.btnRestart);
         Button btnMainMenu = endDialog.findViewById(R.id.btnMainMenu);
+        Button btnKnow = endDialog.findViewById(R.id.btnKnow);
 
         PlayerRepository playerRepository = PlayerRepository.getInstance(this);
         int user_Id = playerRepository.getCurrentUserId();
         PlayerModel user = playerRepository.getUserData(user_Id);
         ContentValues values = new ContentValues();
         if (popupGameText != null) popupGameText.setText(" ");
-        if (popupGameWin != null) popupGameWin.setText(playerWon ? "Вы выиграли" : "Вы проиграли");
+        btnKnow.setVisibility(View.INVISIBLE);
+        if (tvGameWin != null) tvGameWin.setText(playerWon ? "Вы выиграли" : "Вы проиграли");
         if (playerWon){
             switch (REVEAL_LETTERS_COUNT){
                 case 4:
-                    values.put("cryptogramHardWins",user.getCryptogramHardWins()+1);
+                    values.put("cryptogramHardWins", user.getCryptogramHardWins() + 1);
+                    break;
                 case 6:
-                    values.put("cryptogramMidWins",user.getCryptogramMiddleWins()+1);
+                    values.put("cryptogramMidWins", user.getCryptogramMiddleWins() + 1);
+                    break;
                 case 8:
-                    values.put("cryptogramEasyWins",user.getCryptogramEasyWins()+1);
+                    values.put("cryptogramEasyWins", user.getCryptogramEasyWins() + 1);
+                    break;
             }
-
         }
-        playerRepository.updateUserData(user_Id, values);
+
+
+        if (values.size() > 0) {
+            playerRepository.updateUserData(user_Id, values);
+        }
         DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
         dataFromUserAPI.updateUser(user, new CallbackUser() {
             @Override

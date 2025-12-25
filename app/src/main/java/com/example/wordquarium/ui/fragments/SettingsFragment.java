@@ -28,7 +28,9 @@ import com.example.wordquarium.data.model.PlayerModel;
 import com.example.wordquarium.data.model.PlayerSettingsModel;
 import com.example.wordquarium.data.repository.PlayerRepository;
 import com.example.wordquarium.data.repository.PlayerSettingsRepository;
+import com.example.wordquarium.ui.AdminActivity;
 import com.example.wordquarium.ui.RegistrationActivity;
+import com.example.wordquarium.ui.StatisticsActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,6 +41,7 @@ public class SettingsFragment extends Fragment {
     private TextView login;
     private CardView accountExit;
     private CardView bugRep;
+    private CardView admin;
     private ImageView picture;
     private Switch mySwitchSound;
     private Switch mySwitchVibration;
@@ -128,6 +131,11 @@ public class SettingsFragment extends Fragment {
             bugRep.setOnClickListener(v -> sendEmailToAgency());
         }
 
+        admin.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), AdminActivity.class));
+
+        });
+
         // Оформление и загрузка профиля — проверки на null
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.RECTANGLE);
@@ -153,6 +161,7 @@ public class SettingsFragment extends Fragment {
         login = view.findViewById(R.id.yourLogin);
         mySwitchSound = view.findViewById(R.id.gameSwitchSound);
         mySwitchVibration = view.findViewById(R.id.gameSwitchVibration);
+        admin = view.findViewById(R.id.bugAdmin);
         //mySwitchNotification = view.findViewById(R.id.gameSwitchNotification);
     }
 

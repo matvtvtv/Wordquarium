@@ -137,11 +137,5 @@ public class RegistrationActivity extends AppCompatActivity {
         finish();
     }
 
-    // Метод для сохранения ID пользователя
-    private void saveUserId(int userId) {
-        SharedPreferences preferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("userId", userId);
-        editor.apply();
-    }
+
 }

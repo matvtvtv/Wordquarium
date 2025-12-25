@@ -19,38 +19,42 @@
         android:theme="@style/Theme.Wordquarium"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.StatisticsActivity"
+            android:name=".ui.AdminActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
-            android:name=".ui.MultiUserActivity"
-            android:screenOrientation="portrait"
+            android:name=".ui.StatisticsActivity"
             android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.MultiUserActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Wordquarium" />
         <activity
             android:name=".ui.CryptogramActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.GameChainActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.GameWordlyActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.RegistrationActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.SettingsActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.MainActivity"
-            android:screenOrientation="portrait"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
