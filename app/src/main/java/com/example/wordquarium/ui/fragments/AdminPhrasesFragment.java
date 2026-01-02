@@ -22,7 +22,7 @@ public class AdminPhrasesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_admin_words, container, false);
+        View view = inflater.inflate(R.layout.fragment_admin_phrases, container, false);
 
         repository = new AdminRepository(requireContext());
 
@@ -39,8 +39,9 @@ public class AdminPhrasesFragment extends Fragment {
         loadData();
 
         view.findViewById(R.id.btnAdd).setOnClickListener(v -> {
-            repository.insertPhrase("Новая фраза"); // вставляем через репозиторий
-            loadData();
+            AdminEditDialog
+                    .openPhrase(null)
+                    .show(getParentFragmentManager(), "add_phrase");
         });
 
         return view;

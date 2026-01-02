@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +22,9 @@ import com.example.wordquarium.R;
 import com.example.wordquarium.data.model.CharCell;
 import com.example.wordquarium.data.model.PlayerModel;
 import com.example.wordquarium.data.network.CallbackUser;
+import com.example.wordquarium.data.network.CallbackWord;
 import com.example.wordquarium.data.network.DataFromUserAPI;
+import com.example.wordquarium.data.network.DataFromWordAPI;
 import com.example.wordquarium.data.repository.PlayerRepository;
 import com.example.wordquarium.databinding.ActivityCryptogramBinding;
 import com.example.wordquarium.logic.adapters.CryptogramAdapter;
@@ -66,6 +69,7 @@ public class CryptogramActivity extends AppCompatActivity {
 
     private Keyboard keyboard;
     private String phrase = "Сидел петух на лавочке, считал свои булавочки, раз, два, три";
+    private String fromAssets;
     private final HashMap<Character, Integer> mapLetterToNumber = new HashMap<>();
     private final HashSet<Integer> usedNumbers = new HashSet<>();
     private final Random rnd = new Random(System.currentTimeMillis());
@@ -79,20 +83,20 @@ public class CryptogramActivity extends AppCompatActivity {
 
         getAllId();
 
-        String fromAssets = getRandomPhraseFromAssets("Cryptogram.txt");
+        fromAssets = getRandomPhraseFromAssets("Cryptogram.txt");
         if (fromAssets != null && !fromAssets.trim().isEmpty()) phrase = fromAssets.trim();
         REVEAL_LETTERS_COUNT = getIntent().getIntExtra("DIFF", 1);
 
         setupGame();
-        errorsText.setText("Количество ошибок: " + errors + "/5");
+        if (errorsText != null) errorsText.setText("Количество ошибок: " + errors + "/5");
 
-        btnExit.setOnClickListener(v -> {
+        if (btnExit != null) btnExit.setOnClickListener(v -> {
             closeEndDialog();
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
 
-        tvHint.setText("Нажми на квадрат с буквой → он выделится → нажми букву на клавиатуре");
+        if (tvHint != null) tvHint.setText("Нажми на квадрат с буквой → он выделится → нажми букву на клавиатуре");
     }
 
     private String getRandomPhraseFromAssets(String filename) {
@@ -122,7 +126,7 @@ public class CryptogramActivity extends AppCompatActivity {
         prepareMappingForPhrase(phrase);
         buildCellsForPhrase(phrase);
 
-        rvCrypt.setLayoutManager(new GridLayoutManager(this, 10));
+        if (rvCrypt != null) rvCrypt.setLayoutManager(new GridLayoutManager(this, 10));
         adapter = new CryptogramAdapter(this, cells);
         adapter.setOnCellClickListener(position -> {
             if (position >= 0 && position < cells.size()) {
@@ -132,7 +136,7 @@ public class CryptogramActivity extends AppCompatActivity {
                 }
             }
         });
-        rvCrypt.setAdapter(adapter);
+        if (rvCrypt != null) rvCrypt.setAdapter(adapter);
 
         keyboard = new Keyboard(binding.keyboard, keyList);
         keyboard.setOnKeyClickListener(v -> {
@@ -230,7 +234,7 @@ public class CryptogramActivity extends AppCompatActivity {
         } else {
             adapter.markCellWrongWithAttempt(sel, attempt);
             errors++;
-            errorsText.setText("Количество ошибок: " + errors + "/5");
+            if (errorsText != null) errorsText.setText("Количество ошибок: " + errors + "/5");
             if (errors >= 5) showEndDialog(false);
             if (kKey != null) {
                 kKey.setStatus(presentAnywhere ? LetterStatus.YELLOW : LetterStatus.GRAY);
@@ -267,10 +271,10 @@ public class CryptogramActivity extends AppCompatActivity {
         PlayerModel user = playerRepository.getUserData(user_Id);
         ContentValues values = new ContentValues();
         if (popupGameText != null) popupGameText.setText(" ");
-        btnKnow.setVisibility(View.INVISIBLE);
+
         if (tvGameWin != null) tvGameWin.setText(playerWon ? "Вы выиграли" : "Вы проиграли");
-        if (playerWon){
-            switch (REVEAL_LETTERS_COUNT){
+        if (playerWon) {
+            switch (REVEAL_LETTERS_COUNT) {
                 case 4:
                     values.put("cryptogramHardWins", user.getCryptogramHardWins() + 1);
                     break;
@@ -283,10 +287,10 @@ public class CryptogramActivity extends AppCompatActivity {
             }
         }
 
-
         if (values.size() > 0) {
             playerRepository.updateUserData(user_Id, values);
         }
+
         DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
         dataFromUserAPI.updateUser(user, new CallbackUser() {
             @Override
@@ -295,16 +299,27 @@ public class CryptogramActivity extends AppCompatActivity {
             @Override
             public void onError(Throwable throwable) { }
         });
+
         int totalLetters = 0;
         for (CharCell c : cells) if (c.isLetter()) totalLetters++;
         if (popupGame != null) popupGame.setText(totalLetters + " букв");
 
-        btnRestart.setOnClickListener(v -> restartGame());
-        btnMainMenu.setOnClickListener(v -> {
+        if (btnRestart != null) btnRestart.setOnClickListener(v -> restartGame());
+
+        if (btnMainMenu != null) btnMainMenu.setOnClickListener(v -> {
             closeEndDialog();
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
+
+        if (btnKnow != null) {
+            if (fromAssets != null && !fromAssets.trim().isEmpty()) {
+                btnKnow.setVisibility(View.VISIBLE);
+                btnKnow.setOnClickListener(v -> wordPhraseDialog(fromAssets));
+            } else {
+                btnKnow.setVisibility(View.GONE);
+            }
+        }
 
         endDialog.show();
     }
@@ -336,5 +351,53 @@ public class CryptogramActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         closeEndDialog();
+    }
+
+    public void wordPhraseDialog(String phrase) {
+        final Dialog dialog_know = new Dialog(this);
+        dialog_know.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog_know.setContentView(R.layout.popup_know);
+        dialog_know.setCancelable(true);
+        if (dialog_know.getWindow() != null) dialog_know.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        TextView tvAnswer = dialog_know.findViewById(R.id.tvAnswer);
+        ProgressBar progressBar = dialog_know.findViewById(R.id.progressBar);
+
+        if (tvAnswer != null) tvAnswer.setVisibility(View.GONE);
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+
+        dialog_know.show();
+
+        DataFromWordAPI dataFromWordAPI = new DataFromWordAPI();
+
+        dataFromWordAPI.getPhraseExplanation(
+                phrase,
+                new CallbackWord() {
+
+                    @Override
+                    public void onSuccess(String explanation) {
+                        runOnUiThread(() -> {
+                            if (progressBar != null) progressBar.setVisibility(View.GONE);
+                            if (tvAnswer != null) {
+                                tvAnswer.setVisibility(View.VISIBLE);
+                                tvAnswer.setText(explanation);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        runOnUiThread(() -> {
+                            dialog_know.dismiss();
+                            Toast.makeText(
+                                    getApplicationContext(),
+                                    "Ошибка загрузки",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+
+                        });
+                    }
+                }
+        );
     }
 }

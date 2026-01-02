@@ -34,4 +34,17 @@ public class DataFromWordAPI {
             }
         });
     }
+    public void getPhraseExplanation(String phrase, CallbackWord callbackWord) {
+        wordAPI.getPhraseExplanation(phrase, new CallbackWord() {
+            @Override
+            public void onSuccess(String explanation) {
+                callbackWord.onSuccess(explanation);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                callbackWord.onError(throwable);
+            }
+        });
+    }
 }

@@ -39,8 +39,9 @@ public class AdminWordsFragment extends Fragment {
         loadData();
 
         view.findViewById(R.id.btnAdd).setOnClickListener(v -> {
-            repository.insertWord("Новое слово");
-            loadData();
+            AdminEditDialog
+                    .openWord(null)   // 👈 null = режим создания
+                    .show(getParentFragmentManager(), "add_word");
         });
 
         return view;
