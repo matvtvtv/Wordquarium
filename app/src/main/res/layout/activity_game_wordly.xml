@@ -7,64 +7,69 @@
     android:layout_height="match_parent"
     android:background="@color/light_background">
 
-    <!-- Сетка для ввода букв: 6 строк x 5 столбцов -->
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/exitButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/exit_game_activity" />
 
         <TextView
             android:id="@+id/levelGameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="hgchfc"
+            android:text="Уровень"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/exitButton"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/levelGameText"
-            app:layout_constraintHorizontal_bias="0.6"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/exit_game_activity" />
-
-        <ImageView
-            android:id="@+id/btnHint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="24sp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.4"
-            app:layout_constraintStart_toEndOf="@+id/levelGameText"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/hint" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tvHint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Тема слова"
-            app:layout_constraintEnd_toStartOf="@+id/btnHint"
-            app:layout_constraintStart_toEndOf="@+id/exitButton"
-            app:layout_constraintTop_toBottomOf="@+id/levelGameText" />
+            <ImageView
+                android:id="@+id/btnHint"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="8dp"
+                android:padding="2dp"
+                app:srcCompat="@drawable/hint" />
 
+            <ImageView
+                android:id="@+id/btnRules"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:padding="2dp"
+                app:srcCompat="@drawable/info_icon_svgrepo_com" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <TextView
+        android:id="@+id/tvHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Тема слова"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/keyboard"
         android:layout_width="match_parent"
@@ -97,7 +102,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        app:layout_constraintTop_toBottomOf="@+id/tvHint"
         tools:visibility="invisible">
 
     </GridLayout>

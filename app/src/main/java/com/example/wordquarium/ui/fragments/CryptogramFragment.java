@@ -40,19 +40,16 @@ public class CryptogramFragment extends Fragment {
         getAllId();
         btn_Eazy.setOnClickListener(v -> {
             setDiff(8);
-            requireActivity().finish();
 
         });
         btn_Medium.setOnClickListener(v -> {
 
             setDiff(6);
-            requireActivity().finish();
 
         });
         btn_Hard.setOnClickListener(v -> {
 
             setDiff(4);
-            requireActivity().finish();
 
         });
 
@@ -71,12 +68,12 @@ public class CryptogramFragment extends Fragment {
         super.onDestroyView();
         binding = null; // освобождаем binding
     }
-    private void setDiff(int diff){
-
+    private void setDiff(int diff) {
         Intent intent = new Intent(getContext(), CryptogramActivity.class);
-        intent.putExtra("DIFF",diff);
+        intent.putExtra("DIFF", diff);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-
+        requireActivity().finish(); // finish() ПОСЛЕ startActivity()
     }
 
 }

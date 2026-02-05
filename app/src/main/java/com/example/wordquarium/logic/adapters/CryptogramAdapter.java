@@ -1,5 +1,6 @@
 package com.example.wordquarium.logic.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +46,7 @@ public class CryptogramAdapter extends RecyclerView.Adapter<CryptogramAdapter.VH
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH holder, int position) {
+    public void onBindViewHolder(@NonNull VH holder, @SuppressLint("RecyclerView") int position) {
         CharCell cell = items.get(position);
 
         // номер под клеткой

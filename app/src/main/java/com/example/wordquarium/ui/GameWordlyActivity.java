@@ -1,3 +1,7 @@
+// GameWordlyActivity_with_RulesDialog.java
+// В этом файле — обновлённая версия вашего Activity с добавленной кнопкой вызова диалога правил
+// Ниже также приложены два XML-файла: обновлённый activity_game_wordly.xml (с кнопкой) и popup_rules_wordly.xml
+
 package com.example.wordquarium.ui;
 
 import static com.example.wordquarium.logic.adapters.LetterStatus.GRAY;
@@ -24,6 +28,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,6 +79,7 @@ public class GameWordlyActivity extends AppCompatActivity {
     private TextView tvHint;
     private PlayerSettingsRepository playerSettingsRepository;
 
+    private ImageView btnRules; // новая кнопка для вызова диалога правил
 
 
     private final List<Keyboard.Key> keyList = java.util.Arrays.asList(
@@ -95,17 +101,11 @@ public class GameWordlyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-
         binding = ActivityGameWordlyBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         PlayerRepository playerRepository = PlayerRepository.getInstance(getApplicationContext());
         int userId = playerRepository.getCurrentUserId();
         PlayerModel user = playerRepository.getUserData(userId);
-
-
-
-
-
 
         game_mode= getIntent().getIntExtra("GAME_MODE", 2);
         check_of_word= getIntent().getIntExtra("CHECK_OF_WORD", 1);
@@ -181,6 +181,10 @@ public class GameWordlyActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+
+        // Инициализация кнопки правил (новое)
+        btnRules = findViewById(R.id.btnRules);
+        btnRules.setOnClickListener(v -> showRulesDialog());
 
         DataFromWordAPI dataFromWordAPI = new DataFromWordAPI();
         dataFromWordAPI.getWordHint(gameLogic.getHiddenWord(), new CallbackWord() {
@@ -296,6 +300,42 @@ public class GameWordlyActivity extends AppCompatActivity {
         });
 
     }
+
+    // Метод для показа диалога с правилами режима Wordly
+    private void showRulesDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.popup_rules_wordly);
+        dialog.setCancelable(true);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setLayout(
+                    (int) (getResources().getDisplayMetrics().widthPixels * 0.85),
+                    android.view.WindowManager.LayoutParams.WRAP_CONTENT
+            );
+        }
+
+        TextView tvTitle = dialog.findViewById(R.id.tvRulesTitle);
+        TextView tvRules = dialog.findViewById(R.id.tvRulesText);
+        Button btnClose = dialog.findViewById(R.id.btnCloseRules);
+
+        // Динамический текст правил — используем текущее слово/параметры
+        StringBuilder rules = new StringBuilder();
+        rules.append("Правила режима Wordly:\n\n");
+        rules.append("1) Угадайте скрытое слово длиной ").append(wordLength).append(" букв за ").append(MAX_ATTEMPTS).append(" попыток.\n");
+        rules.append("2) Подсветка букв: Зеленая — буква на своём месте; Желтая — буква есть в слове, но не на этом месте; Серая — буквы нет в слове.\n");
+        rules.append("3) Подсказки: можно открыть букву за монеты. Первая подсказка стоит 5 монет, далее цена растёт: (количество использованных + 1) * 5.\n");
+        rules.append("4) За победу вы получаете монеты и/или повышение уровня в зависимости от режима.\n");
+        rules.append("Удачи! Попробуйте отгадать слово — и не забудьте проверять подсказки по необходимости.");
+
+        tvTitle.setText("Правила Wordly");
+        tvRules.setText(rules.toString());
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
     private void playerWin() {
 
         PlayerRepository playerRepository = PlayerRepository.getInstance(getApplicationContext());
@@ -352,16 +392,19 @@ public class GameWordlyActivity extends AppCompatActivity {
         values.put("currentSeriesWinsWordly", user.getCurrentSeriesWinsWordly());
         values.put("maxSeriesWinsWordly", user.getMaxSeriesWinsWordly());
 
-        DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
-        dataFromUserAPI.updateUser(user, new CallbackUser() {
-            @Override
-            public void onSuccess(PlayerModel playerModel) {}
+        if (values.size() > 0) {
+            playerRepository.updateUserData(userId, values);
 
-            @Override
-            public void onError(Throwable throwable) {}
-        });
+            // Синхронизация с сервером только если есть изменения
+            DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
+            dataFromUserAPI.updateUser(user, new CallbackUser() {
+                @Override
+                public void onSuccess(PlayerModel playerModel) { }
 
-        playerRepository.updateUserData(userId, values);
+                @Override
+                public void onError(Throwable throwable) { }
+            });
+        }
 
         showGameWinDialog();
     }
@@ -403,20 +446,23 @@ public class GameWordlyActivity extends AppCompatActivity {
         }
 
         values.put("money", user.getMoney());
-        playerRepository.updateUserData(userId, values);
+        if (values.size() > 0) {
+            playerRepository.updateUserData(userId, values);
 
+            // Синхронизация с сервером только если есть изменения
+            DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
+            dataFromUserAPI.updateUser(user, new CallbackUser() {
+                @Override
+                public void onSuccess(PlayerModel playerModel) { }
 
-        DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
-        dataFromUserAPI.updateUser(user, new CallbackUser() {
-            @Override
-            public void onSuccess(PlayerModel playerModel) { }
-
-            @Override
-            public void onError(Throwable throwable) { }
-        });
+                @Override
+                public void onError(Throwable throwable) { }
+            });
+        }
 
         showGameOverDialog();
     }
+
 
 
     private Set<Integer> hintedIndexes = new HashSet<>();
@@ -429,7 +475,10 @@ public class GameWordlyActivity extends AppCompatActivity {
         dialog.setCancelable(false);
 
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
+        dialog.getWindow().setLayout(
+                (int) (getResources().getDisplayMetrics().widthPixels * 0.7), // 90% ширины экрана
+                android.view.WindowManager.LayoutParams.WRAP_CONTENT
+        );
         TextView popupGameOver = dialog.findViewById(R.id.popupGameOverText);
         Button btnRestart = dialog.findViewById(R.id.btnRestart);
         Button btnMainMenu = dialog.findViewById(R.id.btnMainMenu);
@@ -526,6 +575,10 @@ public class GameWordlyActivity extends AppCompatActivity {
         Button btnKnow = dialog.findViewById(R.id.btnKnow);
 
         popupGameWin.setText( gameLogic.getHiddenWord());
+        dialog.getWindow().setLayout(
+                (int) (getResources().getDisplayMetrics().widthPixels * 0.7), // 90% ширины экрана
+                android.view.WindowManager.LayoutParams.WRAP_CONTENT
+        );
 
         TextView resoult_win = dialog.findViewById(R.id.resoult_win);
         switch (game_mode){
@@ -573,7 +626,7 @@ public class GameWordlyActivity extends AppCompatActivity {
             tvAnswer.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
 
-            dialog_know.show(); // ⚠️ показываем диалог СРАЗУ
+            dialog_know.show();
 
             DataFromWordAPI dataFromWordAPI = new DataFromWordAPI();
 
@@ -608,7 +661,6 @@ public class GameWordlyActivity extends AppCompatActivity {
 
         dialog.show();
     }
-
 
 
 
@@ -699,22 +751,21 @@ public class GameWordlyActivity extends AppCompatActivity {
         // Обновляем локальную БД (и при необходимости — сервер)
         ContentValues values = new ContentValues();
         values.put("money", user.getMoney());
-        playerRepository.updateUserData(userId, values);
+        if (values.size() > 0) {
+            playerRepository.updateUserData(userId, values);
 
-        // Попытка синхронизировать с сервером (как у вас в других местах)
-        DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
-        dataFromUserAPI.updateUser(user, new CallbackUser() {
-            @Override
-            public void onSuccess(PlayerModel playerModel) {
-                // можно логировать успех
-                Log.d("GameActivity", "User updated on server after hint");
-            }
+            // Синхронизация с сервером только если есть изменения
+            DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
+            dataFromUserAPI.updateUser(user, new CallbackUser() {
+                @Override
+                public void onSuccess(PlayerModel playerModel) { }
 
-            @Override
-            public void onError(Throwable throwable) {
-                Log.w("GameActivity", "Failed to update user on server after hint: " + throwable.getMessage());
-            }
-        });
+                @Override
+                public void onError(Throwable throwable) { }
+            });
+        }
+
+
 
         // Обновляем UI
         popupHint.setText("Подсказка: " + new String(hintWord));
@@ -753,5 +804,11 @@ public class GameWordlyActivity extends AppCompatActivity {
 
 
 
-
 }
+
+
+
+
+/* popup_rules_wordly.xml */
+
+

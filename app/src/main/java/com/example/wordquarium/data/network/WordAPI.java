@@ -18,6 +18,7 @@ public class WordAPI {
 
     // используем тот же base URL
     public static final String Api = "https://t7lvb7zl-8080.euw.devtunnels.ms/api";
+    //public static final String Api = "https://jds25q4d-8004.euw.devtunnels.ms/api";
 
     public void getWordExplanation(String word, CallbackWord callbackWord) {
 

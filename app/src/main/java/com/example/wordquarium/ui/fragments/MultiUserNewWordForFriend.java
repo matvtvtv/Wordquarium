@@ -84,6 +84,11 @@ public class MultiUserNewWordForFriend extends Fragment {
                 binding.textError.setText("Введите логин.");
                 return;
             }
+            if (user.getLogin().equals(loginText)) {
+                binding.textError.setText("Нельзя загадывать самому себе");
+                return;
+            }
+
 
             if (!wordText.matches(RUSSIAN_WORD_PATTERN)) {
                 binding.textError.setText("Слово должно состоять из 4–7 русских букв без пробелов.");

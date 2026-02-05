@@ -61,6 +61,7 @@ public class GameChainActivity extends AppCompatActivity {
     private EditText inputField;
     private Button btnCheck;
     private Button btnSkip;
+    private ImageView  btnRules;
     private TextView NumberText;
     private TextView wordKnow;
     private ImageView btnExit;
@@ -76,10 +77,12 @@ public class GameChainActivity extends AppCompatActivity {
     private String WordView2 = "...";
     private String WordView3 = "...";
     private int Number = 0;
-
     private CountdownTimer countdownTimer;
     private boolean gamemode;
     private int time;
+
+    // Добавляем поле для хранения диалога окончания
+    private Dialog endDialog;
 
     private final List<Keyboard.Key> keyList = java.util.Arrays.asList(
             new Keyboard.Key("Й"), new Keyboard.Key("Ц"), new Keyboard.Key("У"), new Keyboard.Key("К"),
@@ -104,7 +107,6 @@ public class GameChainActivity extends AppCompatActivity {
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         wordsRepository = new WordsRepository(db);
-
         PlayerRepository playerRepository = PlayerRepository.getInstance(getApplicationContext());
         PlayerModel user = playerRepository.getUserData(playerRepository.getCurrentUserId());
 
@@ -113,7 +115,7 @@ public class GameChainActivity extends AppCompatActivity {
 
         getAllId();
         NumberText.setText("0");
-
+        btnRules.setOnClickListener(v -> showRulesDialog());
         gamemode = getIntent().getBooleanExtra("GAMEMOD", false);
         time = getIntent().getIntExtra("TIME", 50);
 
@@ -155,11 +157,18 @@ public class GameChainActivity extends AppCompatActivity {
         btnSkip.setOnClickListener(v -> onPlayerSkip());
         btnExit.setOnClickListener(v -> {
             if (countdownTimer != null) countdownTimer.stop();
+            closeEndDialog(); // Закрываем диалог при выходе
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
-        wordKnow.setOnClickListener(v ->wordKnowDialog(WordView2) );
-
+        wordKnow.setOnClickListener(v -> {
+            String wordToExplain = logic.getAppWord();
+            if (wordToExplain != null && !wordToExplain.isEmpty()) {
+                wordKnowDialog(wordToExplain);
+            } else {
+                Toast.makeText(this, "Нет слова для объяснения", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void startNewGame() {
@@ -199,8 +208,72 @@ public class GameChainActivity extends AppCompatActivity {
         if (binding.keyboard != null && binding.keyboard.getAdapter() != null)
             binding.keyboard.getAdapter().notifyDataSetChanged();
     }
+    // Замените существующий метод showRulesDialog() на этот:
 
-    private void onPlayerSubmit() {
+    private void showRulesDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.popup_rules_wordly);
+        dialog.setCancelable(true);
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setLayout(
+                    (int) (getResources().getDisplayMetrics().widthPixels * 0.85),
+                    android.view.WindowManager.LayoutParams.WRAP_CONTENT
+            );
+        }
+
+        TextView tvTitle = dialog.findViewById(R.id.tvRulesTitle);
+        TextView tvRules = dialog.findViewById(R.id.tvRulesText);
+        Button btnClose = dialog.findViewById(R.id.btnCloseRules);
+
+        // Динамический текст правил
+        StringBuilder rules = new StringBuilder();
+        rules.append("Правила режима Цепочка слов:\n\n");
+
+        if (gamemode) {
+            if (time == 66) {
+                rules.append("Режим: Бесконечный\n");
+                rules.append("1) У вас неограниченное время на размышление.\n");
+                rules.append("2) Приложение загадывает слово, вы должны назвать слово, начинающееся на последнюю букву предыдущего.\n");
+            } else {
+                countdownTimer.stop();
+                rules.append("Режим: На время (").append(time).append(" сек)\n");
+                rules.append("1) На каждый ответ у вас ").append(time).append(" секунд.\n");
+                rules.append("2) Таймер сбрасывается после каждого правильного ответа.\n");
+                rules.append("3) Приложение загадывает слово, вы должны назвать слово, начинающееся на последнюю букву предыдущего.\n");
+            }
+        } else {
+            rules.append("Режим: На жизни\n");
+            rules.append("1) У вас 3 жизни (ошибки/пропуска снимают по одной жизни).\n");
+            rules.append("2) Время не ограничено.\n");
+            rules.append("3) Приложение загадывает слово, вы должны назвать слово, начинающееся на последнюю букву предыдущего.\n");
+        }
+
+        rules.append("4) Слово должно существовать в словаре и не повторяться.\n");
+        rules.append("5) Зелёная подсветка на клавиатуре показывает, на какую букву должно начинаться ваше слово.\n");
+        rules.append("6) Кнопка 'Пропустить' позволяет пропустить ход (в режиме на жизни — минус жизнь).\n");
+        rules.append("7) Игра заканчивается, когда приложение не может найти подходящее слово — вы побеждаете!\n");
+        rules.append("8) Рекорды сохраняются для каждого режима отдельно.");
+
+        // УСТАНАВЛИВАЕМ ТЕКСТЫ
+        tvTitle.setText("Правила Цепочки");
+        tvRules.setText(rules.toString());
+
+        // ОБРАБОТЧИК ЗАКРЫТИЯ
+        btnClose.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (time == 66) {
+            countdownTimer.start();}
+        });
+
+
+
+        // ПОКАЗЫВАЕМ ДИАЛОГ
+        dialog.show();
+    }
+        private void onPlayerSubmit() {
         String playerWord = inputField.getText().toString().trim().toUpperCase();
         if (playerWord.isEmpty()) {
             Toast.makeText(this, "Введите слово", Toast.LENGTH_SHORT).show();
@@ -278,53 +351,69 @@ public class GameChainActivity extends AppCompatActivity {
         usedWords.add(appWord);
         logic.setAppWord(appWord);
         updateUIForAppWord(appWord);
-
     }
 
     private void showEndDialog(boolean playerWon, String message) {
+        closeEndDialog(); // Закрываем предыдущий если есть
+
         if (countdownTimer != null) countdownTimer.stop();
 
-        Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.popup_game_win);
-        dialog.setCancelable(true);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        endDialog = new Dialog(this);
+        endDialog.requestWindowFeature(FEATURE_NO_TITLE);
+        endDialog.setContentView(R.layout.popup_game_win);
+        endDialog.setCancelable(false);
 
-        TextView popupGameText = dialog.findViewById(R.id.textView9);
-        TextView popupGameWin = dialog.findViewById(R.id.popupGameWinText);
-        TextView popupGame = dialog.findViewById(R.id.resoult_win);
-        TextView popupGameDia = dialog.findViewById(R.id.tvGameWin);
+        endDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        Button btnRestart = dialog.findViewById(R.id.btnRestart);
-        Button btnMainMenu = dialog.findViewById(R.id.btnMainMenu);
+        TextView popupGameText = endDialog.findViewById(R.id.textView9);
+        TextView popupGameWin = endDialog.findViewById(R.id.popupGameWinText);
+        TextView popupGame = endDialog.findViewById(R.id.resoult_win);
+        TextView popupGameDia = endDialog.findViewById(R.id.tvGameWin);
 
-        if (popupGameText != null) popupGameText.setText(" ");
-        if (popupGameWin != null) popupGameWin.setText("Вы ответили на");
+        Button btnRestart = endDialog.findViewById(R.id.btnRestart);
+        Button btnMainMenu = endDialog.findViewById(R.id.btnMainMenu);
+        Button btnKnow = endDialog.findViewById(R.id.btnKnow);
+
+        if (popupGameText != null) popupGameText.setText("Вы ответили на");
+        if (popupGameWin != null) popupGameWin.setText(" ");
         if (popupGame != null) popupGame.setText(String.valueOf(Number) + " слов");
-        if (playerWon && popupGameDia != null) popupGameDia.setText("Вы победили");
+        if (popupGameDia != null) popupGameDia.setText("");
+        endDialog.getWindow().setLayout(
+                (int) (getResources().getDisplayMetrics().widthPixels * 0.7), // 90% ширины экрана
+                android.view.WindowManager.LayoutParams.WRAP_CONTENT
+        );
         PlayerRepository playerRepository = PlayerRepository.getInstance(this);
         int user_Id = playerRepository.getCurrentUserId();
         PlayerModel user = playerRepository.getUserData(user_Id);
         ContentValues values = new ContentValues();
+
         if(gamemode){
             if(time==66){
-                if(user.getBestChainEndless()<Number){
+                if(user.getBestChainEndless() < Number){
                     values.put("bestChainEndless", Number);
                 }
+            } else if(user.getBestChainSpeed() < Number){
+                values.put("bestChainSpeed", Number);
             }
-            else if(user.getBestChainSpeed()<Number){values.put("bestChainSpeed", Number);}
+        } else if(user.getBestChainTime() < Number){
+            values.put("bestChainTime", Number);
         }
-        else if(user.getBestChainTime()<Number){values.put("bestChainTime", Number);}
-        playerRepository.updateUserData(user_Id, values);
-        DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
-        dataFromUserAPI.updateUser(user, new CallbackUser() {
-            @Override
-            public void onSuccess(PlayerModel playerModel) { }
 
-            @Override
-            public void onError(Throwable throwable) { }
-        });
+        if (values.size() > 0) {
+            playerRepository.updateUserData(user_Id, values);
+
+            DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
+            dataFromUserAPI.updateUser(user, new CallbackUser() {
+                @Override
+                public void onSuccess(PlayerModel playerModel) { }
+
+                @Override
+                public void onError(Throwable throwable) { }
+            });
+        }
+
         btnRestart.setOnClickListener(v -> {
+            closeEndDialog();
             if (countdownTimer != null) countdownTimer.stop();
             Intent intent = new Intent(this, GameChainActivity.class);
             intent.putExtra("TIME", time);
@@ -334,12 +423,28 @@ public class GameChainActivity extends AppCompatActivity {
         });
 
         btnMainMenu.setOnClickListener(v -> {
+            closeEndDialog();
             if (countdownTimer != null) countdownTimer.stop();
             finish();
             startActivity(new Intent(this, MainActivity.class));
         });
 
-        dialog.show();
+        // ИСПРАВЛЕНИЕ: НЕ закрываем endDialog при открытии wordKnowDialog
+        btnKnow.setOnClickListener(v -> {
+            String wordToExplain = logic.getAppWord();
+            if (wordToExplain != null && !wordToExplain.isEmpty()) {
+                wordKnowDialog(wordToExplain);
+            }
+        });
+
+        endDialog.show();
+    }
+
+    private void closeEndDialog() {
+        if (endDialog != null && endDialog.isShowing()) {
+            endDialog.dismiss();
+            endDialog = null;
+        }
     }
 
     private void getAllId() {
@@ -354,6 +459,7 @@ public class GameChainActivity extends AppCompatActivity {
         btnExit = binding.exitButton;
         NumberText = binding.numberText;
         wordKnow = binding.wordKnow;
+        btnRules = binding.btnRules;
     }
 
     public void vibrateDevice(Context context, long milliseconds) {
@@ -430,40 +536,57 @@ public class GameChainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        closeEndDialog();
         if (countdownTimer != null && countdownTimer.isRunning()) {
             countdownTimer.stop();
         }
     }
 
     public void wordKnowDialog(String word){
-        countdownTimer.stop();
+        if (countdownTimer != null && time != 66) {
+            countdownTimer.stop();
+        }
+
         Dialog dialog_know = new Dialog(this);
         dialog_know.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog_know.setContentView(R.layout.popup_know);
         dialog_know.setCancelable(true);
-        dialog_know.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        if (dialog_know.getWindow() != null) {
+            dialog_know.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+
+        }
 
         TextView tvAnswer = dialog_know.findViewById(R.id.tvAnswer);
         ProgressBar progressBar = dialog_know.findViewById(R.id.progressBar);
 
-        tvAnswer.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
+        if (tvAnswer != null) tvAnswer.setVisibility(View.GONE);
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+
+        dialog_know.setOnDismissListener(dialog -> {
+            if (time != 66 && countdownTimer != null) {
+                countdownTimer.start();
+            }
+        });
 
         dialog_know.show();
+
+
 
         DataFromWordAPI dataFromWordAPI = new DataFromWordAPI();
 
         dataFromWordAPI.getWordExplanation(
                 word,
                 new CallbackWord() {
-
                     @Override
                     public void onSuccess(String explanation) {
                         runOnUiThread(() -> {
-                            progressBar.setVisibility(View.GONE);
-                            tvAnswer.setVisibility(View.VISIBLE);
-                            tvAnswer.setText(explanation);
-                            countdownTimer.start();
+                            if (progressBar != null) progressBar.setVisibility(View.GONE);
+                            if (tvAnswer != null) {
+                                tvAnswer.setVisibility(View.VISIBLE);
+                                tvAnswer.setText(explanation);
+                            }
                         });
                     }
 
@@ -476,7 +599,6 @@ public class GameChainActivity extends AppCompatActivity {
                                     "Ошибка загрузки",
                                     Toast.LENGTH_SHORT
                             ).show();
-                            countdownTimer.start();
                         });
                     }
                 }
