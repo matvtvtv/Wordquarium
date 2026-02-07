@@ -6,15 +6,17 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "words.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public static final String WORD_TABLE = "words";
     public static final String COLUMN_ID_WORDS = "id";
     public static final String COLUMN_WORD_WORDS = "word";
     public static final String COLUMN_LENGTH_WORDS = "length";
 
-
-
+    public static final String WORD_TABLE_2 = "words_final";
+    public static final String COLUMN_ID_WORDS_2 = "id";
+    public static final String COLUMN_WORD_WORDS_2 = "word";
+    public static final String COLUMN_LENGTH_WORDS_2 = "length";
 
 
     public static final String USER_TABLE = "user";
@@ -72,6 +74,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_ID_WORDS + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_WORD_WORDS + " TEXT, " +
             COLUMN_LENGTH_WORDS + " INTEGER )";
+    private static final String CREATE_TABLE_WORDS_2= "CREATE TABLE " + WORD_TABLE_2 + " ( " +
+            COLUMN_ID_WORDS_2 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            COLUMN_WORD_WORDS_2 + " TEXT, " +
+            COLUMN_LENGTH_WORDS_2 + " INTEGER )";
 
     private static final String CREATE_USER_SETTINGS_TABLE = "CREATE TABLE " +  USER_SETTINGS_TABLE+ " ( " +
             COLUMN_USER_SETTINGS_ID + " INTEGER, " +
@@ -98,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_WORDS);
+        db.execSQL(CREATE_TABLE_WORDS_2);
         db.execSQL(CREATE_USER_TABLE);
         db.execSQL(CREATE_USER_SETTINGS_TABLE);
         db.execSQL(CREATE_ROAD_TEXT_TABLE);
@@ -106,6 +113,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + WORD_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + WORD_TABLE_2);
         db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + USER_SETTINGS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + ROAD_TEXT_TABLE);

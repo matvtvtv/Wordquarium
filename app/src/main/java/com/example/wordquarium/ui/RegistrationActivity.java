@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,11 +36,12 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private EditText editTextLogin, editTextPassword;
     private TextView textViewMessage;
+    private ProgressBar progressBar;
+
     private PlayerRepository playerRepository;
     private PlayerSettingsRepository playerSettingsRepository;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
-
     private DataFromUserAPI dataFromUserAPI = new DataFromUserAPI();
 
     @Override
@@ -47,56 +49,53 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-
         editTextLogin = findViewById(R.id.editTextLogin);
         editTextPassword = findViewById(R.id.editTextPassword);
+        textViewMessage = findViewById(R.id.textViewMessage);
+        progressBar = findViewById(R.id.progressBar);
+
         CardView btnRegister = findViewById(R.id.registation_card);
         CardView btnLog = findViewById(R.id.entarance_card);
-        textViewMessage = findViewById(R.id.textViewMessage);
 
         playerRepository = PlayerRepository.getInstance(this);
         playerSettingsRepository = PlayerSettingsRepository.getInstance(this);
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                registerUser();
-            }
-        });
-        btnLog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginUser();
-            }
-        });
+
+        btnRegister.setOnClickListener(v -> registerUser());
+        btnLog.setOnClickListener(v -> loginUser());
+    }
+
+    private void showLoading(boolean show) {
+        runOnUiThread(() -> progressBar.setVisibility(show ? View.VISIBLE : View.GONE));
     }
 
     private void registerUser() {
         String login = editTextLogin.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
-
         if (login.isEmpty() || password.isEmpty()) {
             textViewMessage.setText("Введите логин и пароль!");
             return;
         }
-        executor.execute(() -> dataFromUserAPI.getRegistration(login, password, new CallbackUser() {
-            @Override
-            public void onSuccess(PlayerModel playerModel) {
-                saveToRepository(playerModel);
-            }
 
-            @Override
-            public void onError(Throwable throwable) {
-                textViewMessage.setText("Логин уже существует!");
-            }
-        }));
+        showLoading(true);
 
-        if (playerRepository.isValidUser(login)) {
-            textViewMessage.setText("Логин уже существует!");
-        } else {
+        executor.execute(() ->
+                dataFromUserAPI.getRegistration(login, password, new CallbackUser() {
+                    @Override
+                    public void onSuccess(PlayerModel playerModel) {
+                        showLoading(false);
+                        saveToRepository(playerModel);
+                    }
 
-
-        }
+                    @Override
+                    public void onError(Throwable throwable) {
+                        showLoading(false);
+                        runOnUiThread(() ->
+                                textViewMessage.setText("Логин уже существует!")
+                        );
+                    }
+                })
+        );
     }
 
     private void loginUser() {
@@ -108,27 +107,29 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
+        showLoading(true);
 
-        executor.execute(() -> dataFromUserAPI.getEnter(login, password, new CallbackUser() {
-            @Override
-            public void onSuccess(PlayerModel playerModel) {
-                saveToRepository(playerModel);
-            }
+        executor.execute(() ->
+                dataFromUserAPI.getEnter(login, password, new CallbackUser() {
+                    @Override
+                    public void onSuccess(PlayerModel playerModel) {
+                        showLoading(false);
+                        saveToRepository(playerModel);
+                    }
 
-            @Override
-            public void onError(Throwable throwable) {
-                runOnUiThread(() -> {
-                    Toast.makeText(RegistrationActivity.this, "Ошибка входа: " + throwable.getMessage(), Toast.LENGTH_LONG).show();
-                });
-                textViewMessage.setText("Аккаунт не найден!");
-            }
-        }));
-
+                    @Override
+                    public void onError(Throwable throwable) {
+                        showLoading(false);
+                        runOnUiThread(() ->
+                                textViewMessage.setText("Аккаунт не найден!")
+                        );
+                    }
+                })
+        );
     }
 
     private void saveToRepository(PlayerModel playerModel) {
         playerRepository.userRegistration(playerModel, this);
-        PlayerRepository playerRepository = PlayerRepository.getInstance(getApplicationContext());
         int userId = playerRepository.getCurrentUserId();
         playerSettingsRepository.userSettingsRegistration(userId, this);
 
@@ -136,6 +137,5 @@ public class RegistrationActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
-
 }
+

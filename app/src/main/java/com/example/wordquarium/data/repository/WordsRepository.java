@@ -26,10 +26,7 @@ public class WordsRepository {
         this.db = db;
     }
 
-    /**
-     * Импорт слов из файла в БД.
-     * Выполняется в транзакции для производительности.
-     */
+
     public void importWordsFromFile(Context context) {
         WordsFileReader fileReader = new WordsFileReader(context);
         List<WordsModel> fileWords = fileReader.getWordsList(); // Загружаем слова из файла
@@ -54,10 +51,70 @@ public class WordsRepository {
         // Обновим кеш при необходимости
         reloadCache();
     }
+    public void importWordsFromFile_2(Context context) {
+        WordsFileReader fileReader = new WordsFileReader(context, true); // true = второй файл
+        List<WordsModel> fileWords = fileReader.getWordsList();
+        if (fileWords == null || fileWords.isEmpty()) return;
 
-    /**
-     * Возвращает список слов заданной длины.
-     */
+        db.beginTransaction();
+        try {
+            for (WordsModel word : fileWords) {
+                ContentValues values = new ContentValues();
+                values.put(DatabaseHelper.COLUMN_ID_WORDS_2, word.getId());
+                values.put(DatabaseHelper.COLUMN_WORD_WORDS_2, word.getWord());
+                values.put(DatabaseHelper.COLUMN_LENGTH_WORDS_2, word.getLength());
+                db.insertWithOnConflict(DatabaseHelper.WORD_TABLE_2, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            }
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(TAG, "importWordsFromFile_2 error: " + e.getMessage(), e);
+        } finally {
+            db.endTransaction();
+        }
+
+        // Обновим кеш при необходимости
+        reloadCache();
+    }
+    public List<WordsModel> getAllWords_2() {
+        List<WordsModel> result = new ArrayList<>();
+        String query = "SELECT * FROM " + DatabaseHelper.WORD_TABLE_2;
+        Cursor cursor = db.rawQuery(query, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_WORDS_2));
+                    String word = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORDS_2));
+                    int len = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LENGTH_WORDS_2));
+                    result.add(new WordsModel(id, word, len));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            cursor.close();
+        }
+        return result;
+    }
+
+    public List<WordsModel> getFilteredWordsFree_2(int length) {
+        List<WordsModel> result = new ArrayList<>();
+        String query = "SELECT * FROM " + DatabaseHelper.WORD_TABLE_2 +
+                " WHERE " + DatabaseHelper.COLUMN_LENGTH_WORDS_2 + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(length)});
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_WORDS_2));
+                    String word = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORDS_2));
+                    int len = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LENGTH_WORDS_2));
+                    result.add(new WordsModel(id, word, len));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            cursor.close();
+        }
+        return result;
+    }
+
+
     public List<WordsModel> getFilteredWordsFree(int length) {
         List<WordsModel> result = new ArrayList<>();
         String query = "SELECT * FROM " + DatabaseHelper.WORD_TABLE +
@@ -80,9 +137,7 @@ public class WordsRepository {
         return result;
     }
 
-    /**
-     * Получить все слова из таблицы.
-     */
+
     public List<WordsModel> getAllWords() {
         List<WordsModel> result = new ArrayList<>();
         String query = "SELECT * FROM " + DatabaseHelper.WORD_TABLE;
@@ -104,10 +159,7 @@ public class WordsRepository {
         return result;
     }
 
-    /**
-     * Получить слова, начинающиеся с указанной буквы.
-     * Используем LIKE ? COLLATE NOCASE для игнорирования регистра.
-     */
+
     public List<WordsModel> getWordsStartingWith(char startChar) {
         List<WordsModel> result = new ArrayList<>();
         String prefix = String.valueOf(startChar);
@@ -165,9 +217,7 @@ public class WordsRepository {
         }
     }
 
-    /**
-     * Проверка, пуста ли таблица слов.
-     */
+
     public boolean isTableEmpty() {
         String query = "SELECT COUNT(1) AS cnt FROM " + DatabaseHelper.WORD_TABLE;
         Cursor cursor = db.rawQuery(query, null);
@@ -182,25 +232,11 @@ public class WordsRepository {
         }
     }
 
-    /**
-     * Перезагрузить кеш из БД.
-     */
+
     public void reloadCache() {
         wordsList.clear();
         wordsList.addAll(getAllWords());
     }
 
-    /**
-     * Очистить локальный кеш.
-     */
-    public void clearCache() {
-        wordsList.clear();
-    }
 
-    /**
-     * Вернуть копию кеша.
-     */
-    public List<WordsModel> getCachedWords() {
-        return new ArrayList<>(wordsList);
-    }
 }

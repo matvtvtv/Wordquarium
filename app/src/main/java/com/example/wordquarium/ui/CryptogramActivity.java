@@ -424,6 +424,7 @@ public class CryptogramActivity extends AppCompatActivity {
         if (btnKnow != null) {
             if (fromAssets != null && !fromAssets.trim().isEmpty()) {
                 btnKnow.setVisibility(View.VISIBLE);
+                btnKnow.setText("Узнать значение фразы");
                 btnKnow.setOnClickListener(v -> wordPhraseDialog(fromAssets));
             } else {
                 btnKnow.setVisibility(View.GONE);

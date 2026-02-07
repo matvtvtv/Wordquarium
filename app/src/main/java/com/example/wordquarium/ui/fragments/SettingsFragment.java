@@ -115,20 +115,25 @@ public class SettingsFragment extends Fragment {
             });
         }
 
-        // Исправленная строка: notification переключатель должен смотреть на поле notification
-//        if (mySwitchNotification != null && user != null) {
-//            mySwitchNotification.setChecked(user.getNotification() == 1);
-//            mySwitchNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//                int newNotificationValue = isChecked ? 1 : 0;
-//                ContentValues values = new ContentValues();
-//                values.put("notification", newNotificationValue);
-//                playerSettingsRepository.updateUserData(user_Id, values);
-//            });
-//        }
+
+        if (mySwitchNotification != null && user != null) {
+            mySwitchNotification.setChecked(user.getNotification() == 1);
+            mySwitchNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                int newNotificationValue = isChecked ? 1 : 0;
+                ContentValues values = new ContentValues();
+                values.put("notification", newNotificationValue);
+                playerSettingsRepository.updateUserData(user_Id, values);
+            });
+        }
 
         // bug report
         if (bugRep != null) {
             bugRep.setOnClickListener(v -> sendEmailToAgency());
+        }
+        admin.setVisibility(View.GONE);
+        String adm="admin_wordly";
+        if (login.getText().toString().equals(adm)) {
+            admin.setVisibility(View.VISIBLE);
         }
 
         admin.setOnClickListener(v -> {
@@ -151,7 +156,7 @@ public class SettingsFragment extends Fragment {
         }
 
         return view;
-    }
+    }//administrator_wordquarium
 
     private void getAllId(View view) {
         // Используем root.findViewById — безопасно для фрагмента
@@ -162,7 +167,7 @@ public class SettingsFragment extends Fragment {
         mySwitchSound = view.findViewById(R.id.gameSwitchSound);
         mySwitchVibration = view.findViewById(R.id.gameSwitchVibration);
         admin = view.findViewById(R.id.bugAdmin);
-        //mySwitchNotification = view.findViewById(R.id.gameSwitchNotification);
+        mySwitchNotification = view.findViewById(R.id.gameSwitchNotification);
     }
 
     private static final String AGENCY_EMAIL = "matveicharniauski@gmail.com";

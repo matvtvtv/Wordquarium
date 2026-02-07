@@ -32,8 +32,9 @@ public class MultiUserAPI {
 
     //public static final String Api="http://192.168.31.174:8080/api/v1/multi_users";
     //public static final String Api="http://192.168.0.102:8080/api/v1/multi_users";
-    public static final String Api="https://t7lvb7zl-8080.euw.devtunnels.ms/api/v1/multi_users";
-   // public static final String Api="https://jds25q4d-8004.euw.devtunnels.ms/api/v1/multi_users";
+    //public static final String Api="https://t7lvb7zl-8080.euw.devtunnels.ms/api/v1/multi_users";
+    public static final String Api="https://t7lvb7zl-8070.euw.devtunnels.ms/api/v1/multi_users";
+   //public static final String Api="https://jds25q4d-8004.euw.devtunnels.ms/api/v1/multi_users";
     //public static final String Api="http://172.20.10.2:8080/api/v1/multi_users";
 
 

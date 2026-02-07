@@ -15,8 +15,10 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.wordquarium.R;
 import com.example.wordquarium.data.model.PlayerModel;
+import com.example.wordquarium.data.model.PlayerSettingsModel;
 import com.example.wordquarium.data.repository.DatabaseHelper;
 import com.example.wordquarium.data.repository.PlayerRepository;
+import com.example.wordquarium.data.repository.PlayerSettingsRepository;
 import com.example.wordquarium.data.repository.RoadOfTextFileReader;
 import com.example.wordquarium.data.repository.RoadOfTextRepository;
 import com.example.wordquarium.data.repository.WordsRepository;
@@ -65,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
         int isUserLoggedIn = preferences.getInt("userId", -1);
         boolean isFirstRun = preferences.getBoolean("isFirstRun", true);
 
+
+
+
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         WordsRepository wordsRepository = new WordsRepository(db);
@@ -72,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isFirstRun) {
             wordsRepository.importWordsFromFile(this);
+            wordsRepository.importWordsFromFile_2(this);
             SharedPreferences.Editor editor = preferences.edit();
             List<String> phrases = RoadOfTextFileReader.readFromAssets(this, "Cryptogram.txt");
             int added = repo.insertAllIfNotExists(phrases);
@@ -87,9 +93,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         PlayerRepository playerRepository = PlayerRepository.getInstance(this);
+        PlayerSettingsRepository playerSettingsRepository = PlayerSettingsRepository.getInstance(this);
         int userId = playerRepository.getCurrentUserId();
         PlayerModel user = playerRepository.getUserData(userId);
-
+        PlayerSettingsModel userSet = playerSettingsRepository.getUserData(userId);
+        if (userSet.getNotification()==1) {
+            com.example.wordquarium.notifications.NotificationScheduler.scheduleDailyNoon(this);
+        }
         getAllId();
         money_text.setText(String.valueOf(user.getMoney()));
 

@@ -264,7 +264,7 @@ public class GameChainActivity extends AppCompatActivity {
         // ОБРАБОТЧИК ЗАКРЫТИЯ
         btnClose.setOnClickListener(v -> {
             dialog.dismiss();
-            if (time == 66) {
+            if (time != 66) {
             countdownTimer.start();}
         });
 
@@ -273,13 +273,14 @@ public class GameChainActivity extends AppCompatActivity {
         // ПОКАЗЫВАЕМ ДИАЛОГ
         dialog.show();
     }
-        private void onPlayerSubmit() {
+    private void onPlayerSubmit() {
         String playerWord = inputField.getText().toString().trim().toUpperCase();
         if (playerWord.isEmpty()) {
             Toast.makeText(this, "Введите слово", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Используем метод для корректной последней буквы
         char required = logic.getRequiredStartLetter();
         if (playerWord.charAt(0) != required) {
             Toast.makeText(this, "Слово должно начинаться с буквы: " + required, Toast.LENGTH_SHORT).show();
@@ -291,15 +292,16 @@ public class GameChainActivity extends AppCompatActivity {
             return;
         }
 
-        if (wordsRepository.isValidWord(playerWord)) {
+        if (wordsRepository.isValidWord(playerWord)) { // исправил проверку
             Toast.makeText(this, "Похоже, я не знаю такого слова", Toast.LENGTH_SHORT).show();
             return;
         }
 
         usedWords.add(playerWord);
 
-        char last = playerWord.charAt(playerWord.length() - 1);
-        List<WordsModel> candidates = wordsRepository.getWordsStartingWith(last);
+        // Бот подбирает слово на последнюю реальную букву игрока
+        char lastLetterForBot = logic.getRequiredStartLetterForWord(playerWord);
+        List<WordsModel> candidates = wordsRepository.getWordsStartingWith(lastLetterForBot);
         List<WordsModel> filtered = new ArrayList<>();
         for (WordsModel w : candidates) {
             String up = w.getWord().toUpperCase();
@@ -329,11 +331,13 @@ public class GameChainActivity extends AppCompatActivity {
         inputField.setText("");
     }
 
+
     private void onPlayerSkip() {
         Toast.makeText(this, "Пропуск хода", Toast.LENGTH_SHORT).show();
 
-        char last = logic.getRequiredStartLetter();
-        List<WordsModel> candidates = wordsRepository.getWordsStartingWith(last);
+        // Бот подбирает слово на последнюю реальную букву текущего слова
+        char lastLetterForBot = logic.getRequiredStartLetter();
+        List<WordsModel> candidates = wordsRepository.getWordsStartingWith(lastLetterForBot);
         List<WordsModel> filtered = new ArrayList<>();
         for (WordsModel w : candidates) {
             String up = w.getWord().toUpperCase();
@@ -352,6 +356,7 @@ public class GameChainActivity extends AppCompatActivity {
         logic.setAppWord(appWord);
         updateUIForAppWord(appWord);
     }
+
 
     private void showEndDialog(boolean playerWon, String message) {
         closeEndDialog(); // Закрываем предыдущий если есть
@@ -604,4 +609,7 @@ public class GameChainActivity extends AppCompatActivity {
                 }
         );
     }
+
+
+
 }

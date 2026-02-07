@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,12 +33,12 @@ public class MultiUserList extends Fragment {
 
     private ImageView plus;
     private ImageView exit_m;
-
     private RecyclerView recyclerView;
+    private ProgressBar progressBar;
 
-    public MultiUserList() {}
     private FragmentMultiUserListBinding binding;
 
+    public MultiUserList() {}
 
     @Nullable
     @Override
@@ -45,14 +46,13 @@ public class MultiUserList extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-       binding= FragmentMultiUserListBinding.inflate(inflater, container, false);
+        binding = FragmentMultiUserListBinding.inflate(inflater, container, false);
 
         getAllId();
+
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-
         plus.setOnClickListener(v -> {
-
             MultiUserNewWordForFriend newFrag = new MultiUserNewWordForFriend();
             requireActivity()
                     .getSupportFragmentManager()
@@ -61,66 +61,78 @@ public class MultiUserList extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
-        exit_m.setOnClickListener(v->{
+
+        exit_m.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), MainActivity.class);
             startActivity(intent);
-
         });
-        // Получаем список загаданных слов от API
+
+        loadGames();
+
+        return binding.getRoot();
+    }
+
+    private void loadGames() {
+        showLoading(true);
+
         PlayerRepository playerRepository = PlayerRepository.getInstance(requireContext());
         int userId = playerRepository.getCurrentUserId();
         PlayerModel user = playerRepository.getUserData(userId);
 
         DataFromMultiUserAPI api = new DataFromMultiUserAPI();
+
         api.getMultiUserGames(user.getLogin(), new CallbackMultiUserS() {
             @Override
             public void onSuccess(MultiUserModel[] multiUsers) {
                 if (getActivity() == null) return;
+
                 requireActivity().runOnUiThread(() -> {
-                    // создаём адаптер с listener-ом, который будет открывать GameActivity
-                    MultiUserAdapter adapter = new MultiUserAdapter(multiUsers, item -> {
-                        // вот здесь, item — выбранный MultiUserModel,
-                        // у него есть метод getWord() и getLogin()
-                        openGameActivity(item);
-                    });
+                    showLoading(false);
+
+                    MultiUserAdapter adapter =
+                            new MultiUserAdapter(multiUsers, item -> openGameActivity(item));
+
                     recyclerView.setAdapter(adapter);
                 });
             }
 
             @Override
             public void onError(Throwable throwable) {
-                throwable.printStackTrace();
+                if (getActivity() == null) return;
+
+                requireActivity().runOnUiThread(() -> {
+                    showLoading(false);
+                    throwable.printStackTrace();
+                });
             }
         });
-
-        return binding.getRoot();
     }
 
-    // Запускаем GameActivity, передавая слово друга
+    private void showLoading(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
     private void openGameActivity(MultiUserModel chosenGame) {
         Intent intent = new Intent(requireContext(), GameWordlyActivity.class);
 
-
         intent.putExtra("GAME_MODE", 4);
-        intent.putExtra("CHECK_OF_WORD",chosenGame.getFlagOfCheck());
-        intent.putExtra("WORD_LENGTH",chosenGame.getWord().length());
+        intent.putExtra("CHECK_OF_WORD", chosenGame.getFlagOfCheck());
+        intent.putExtra("WORD_LENGTH", chosenGame.getWord().length());
         intent.putExtra("FRIEND_WORD", chosenGame.getWord());
 
-
         startActivity(intent);
-
     }
 
-
-    private void getAllId(){
-        plus= binding.plus;
-        exit_m= binding.exitM;
+    private void getAllId() {
+        plus = binding.plus;
+        exit_m = binding.exitM;
         recyclerView = binding.recyclerMultiUser;
-
+        progressBar = binding.progressBarMulti;
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // освобождаем binding
+        binding = null;
     }
 }

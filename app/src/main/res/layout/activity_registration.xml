@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="top"
     android:orientation="vertical"
     android:padding="20dp"
     android:background="@color/light_background">
+
     <Space
         android:layout_width="match_parent"
         android:layout_height="100dp" />
 
+    <!-- LOGIN -->
     <EditText
         android:id="@+id/editTextLogin"
         android:layout_width="match_parent"
@@ -18,64 +20,73 @@
         android:hint="Введите логин"
         android:inputType="text" />
 
-    <EditText
-        android:id="@+id/editTextPassword"
+    <!-- PASSWORD WITH EYE -->
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:hint="Введите пароль"
-        android:inputType="textPassword" />
+        app:endIconMode="password_toggle">
 
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Введите пароль"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- REGISTER -->
     <androidx.cardview.widget.CardView
         android:id="@+id/registation_card"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         app:cardCornerRadius="20dp"
         app:cardBackgroundColor="@color/light_green"
-        android:layout_marginTop="20dp"
-        >
+        android:layout_marginTop="20dp">
 
         <TextView
-            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Зарегистрироваться"
             android:layout_gravity="center"
             android:alpha="0.6"
-            android:textSize="20dp"
-            />
+            android:textSize="20sp" />
     </androidx.cardview.widget.CardView>
 
+    <!-- LOGIN -->
     <androidx.cardview.widget.CardView
         android:id="@+id/entarance_card"
-        app:cardCornerRadius="20dp"
-        android:layout_marginTop="20dp"
-
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        app:cardBackgroundColor="@color/light_yellow">
+        app:cardCornerRadius="20dp"
+        app:cardBackgroundColor="@color/light_yellow"
+        android:layout_marginTop="20dp">
 
         <TextView
-            android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Вход"
-            android:alpha="0.6"
-
-            android:textSize="20dp"
-
             android:layout_gravity="center"
-            />
+            android:alpha="0.6"
+            android:textSize="20sp" />
     </androidx.cardview.widget.CardView>
 
+    <!-- PROGRESS BAR -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:visibility="gone" />
+
+    <!-- MESSAGE -->
     <TextView
         android:id="@+id/textViewMessage"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:text=""
         android:textColor="@android:color/holo_red_dark"
         android:textSize="16sp" />
 

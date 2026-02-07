@@ -128,7 +128,7 @@ public class GameWordlyActivity extends AppCompatActivity {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         wordsRepository = new WordsRepository(db);
         if(game_mode!=4){
-            List<WordsModel> validWords = wordsRepository.getFilteredWordsFree(wordLength);
+            List<WordsModel> validWords = wordsRepository.getFilteredWordsFree_2(wordLength);
             int randomIndex = (int) (Math.random() * validWords.size());
             WordsModel selectedWord = validWords.get(randomIndex);
             gameLogic = new GameWordlyLogic(MAX_ATTEMPTS);
@@ -324,9 +324,9 @@ public class GameWordlyActivity extends AppCompatActivity {
         rules.append("Правила режима Wordly:\n\n");
         rules.append("1) Угадайте скрытое слово длиной ").append(wordLength).append(" букв за ").append(MAX_ATTEMPTS).append(" попыток.\n");
         rules.append("2) Подсветка букв: Зеленая — буква на своём месте; Желтая — буква есть в слове, но не на этом месте; Серая — буквы нет в слове.\n");
-        rules.append("3) Подсказки: можно открыть букву за монеты. Первая подсказка стоит 5 монет, далее цена растёт: (количество использованных + 1) * 5.\n");
+        rules.append("3) Подсказки: можно открыть букву за монеты. Первая подсказка стоит 5 монет, далее цена растёт.\n");
         rules.append("4) За победу вы получаете монеты и/или повышение уровня в зависимости от режима.\n");
-        rules.append("Удачи! Попробуйте отгадать слово — и не забудьте проверять подсказки по необходимости.");
+        rules.append("Удачи! ");
 
         tvTitle.setText("Правила Wordly");
         tvRules.setText(rules.toString());
